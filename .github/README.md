@@ -6,8 +6,8 @@ The service is **model-provider-agnostic**: it talks to any OpenAI-compatible HT
 
 ## API documentation
 
-- **Latest:** https://kasir-barati.github.io/smart-novel-beatrice/latest/
-- **All versions:** https://kasir-barati.github.io/smart-novel-beatrice/
+- **Latest:** https://ponos-os.github.io/smart-novel-beatrice/latest/
+- **All versions:** https://ponos-os.github.io/smart-novel-beatrice/
 
 Every release publishes a versioned copy — you can switch between versions from the picker in the top-right of any docs page.
 

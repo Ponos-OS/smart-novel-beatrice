@@ -9,14 +9,14 @@ info:
     GraphQL API for LLM-powered smart-novel features.
     The service is model-provider-agnostic — configure it against any OpenAI-compatible endpoint via env vars.
 
-    See the [repo](https://github.com/kasir-barati/smart-novel-beatrice) for setup and self-hosting instructions.
+    See the [repo](https://github.com/Ponos-OS/smart-novel-beatrice) for setup and self-hosting instructions.
 
     [Download schema.graphql](./schema.graphql) — the SDL for this version.
   contact:
     name: kasir-barati
-    url: https://github.com/kasir-barati/smart-novel-beatrice
+    url: https://github.com/Ponos-OS/smart-novel-beatrice
   # SpectaQL requires at least one of introspection.url/servers.url/info.x-url. We ship purely-static docs (no live endpoint to point at), so we use x-url as a placeholder pointing at the repo — users self-host and hit /graphql on their own instance.
-  x-url: https://github.com/kasir-barati/smart-novel-beatrice
+  x-url: https://github.com/Ponos-OS/smart-novel-beatrice
   x-introItems:
     - title: Endpoint
       description: |
