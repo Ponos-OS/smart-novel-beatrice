@@ -167,11 +167,11 @@ def app_container(
     """
     Start the beatrice container on the shared network with Ollama + collector.
 
-    ``TTS__BASE_URL`` points at WireMock rather than the real DashScope API —
-    the provider is still the DashScope-native Qwen3-TTS adapter until step 2, and `generateAudio` tests stub its
-    synthesize response there instead of hitting a live third-party endpoint.
-    ``TTS__API_KEY`` only needs to be non-empty — nothing here calls the real
-    DashScope API to check its value. ``TTS__VOICES`` is static config now (no
+    ``TTS__BASE_URL`` points at WireMock rather than a real speech API —
+    `generateAudio` tests stub its `POST /audio/speech` response there instead of
+    hitting a live third-party endpoint.
+    ``TTS__API_KEY`` only needs to be non-empty — nothing here calls a real
+    API to check its value. ``TTS__VOICES`` is static config now (no
     voices-listing endpoint exists), so it's set directly here rather than stubbed.
     ``GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS`` allow-lists the WireMock alias so
     `generateAudio`'s genUploadUrl/statusCallbackUrl can point at it in tests.

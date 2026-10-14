@@ -36,7 +36,7 @@ class GenerateAudioJob(BaseModel):
     status_callback_url: str = Field(alias="statusCallbackUrl")
     instruct: str | None = Field(
         default=None,
-        description="Qwen3-TTS style guide, absent on messages published before this field existed.",
+        description="Style guide sent as `instructions`, absent on messages published before this field existed.",
     )
     client_context_id: str | None = Field(
         default=None,

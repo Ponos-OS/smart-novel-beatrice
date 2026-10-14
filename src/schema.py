@@ -26,8 +26,7 @@ class Query:
     audio_voices: list[str] = strawberry.field(
         resolver=resolve_audio_voices,
         description=(
-            "Voice names available for TTS synthesis, from the configured default "
-            "provider. Cached for the process lifetime after the first call. "
+            "Voice names available for TTS synthesis, from the TTS__VOICES setting. "
             "English text only for now — this limitation will be addressed later."
         ),
     )

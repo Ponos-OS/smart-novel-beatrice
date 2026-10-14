@@ -32,13 +32,13 @@ INVALID_VOICE_ERROR_CODE = "INVALID_VOICE"
 
 class InvalidVoiceError(AppError):
     """
-    Raised when `generateAudio` is called with a voice name the configured provider
-    doesn't offer (per `audioVoices`).
+    Raised when `generateAudio` is called with a voice name that isn't in `TTS__VOICES`
+    (per `audioVoices`).
     """
 
     def __init__(self, *, voice: str) -> None:
         super().__init__(
             code=INVALID_VOICE_ERROR_CODE,
-            message=f"'{voice}' is not a voice the configured provider accepts.",
+            message=f"'{voice}' is not an available voice.",
             extensions={"voice": voice},
         )

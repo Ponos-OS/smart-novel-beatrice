@@ -108,13 +108,12 @@ async def generate_audio(
         str | None,
         strawberry.argument(
             description=(
-                "Qwen3-TTS-only. A style guide applied to the whole call, e.g. 'A male "
-                "narrator with a clear voice. Treat bracketed words like [dramatic] as "
-                "emotion cues, not literal text.' text is never parsed or stripped by "
-                "Beatrice — any inline tags in it are passed through verbatim for the "
-                "model to interpret per this guide. Rejected when the configured "
-                "provider isn't Qwen3-TTS. Qwen3-TTS (and therefore instruct) is "
-                "English-only for now."
+                "A style guide applied to the whole call, e.g. 'A male narrator with a "
+                "clear voice. Treat bracketed words like [dramatic] as emotion cues, not "
+                "literal text.' Sent to the TTS endpoint as `instructions`; whether it is "
+                "honored depends on the configured model. text is never parsed or stripped "
+                "by Beatrice — any inline tags in it are passed through verbatim for the "
+                "model to interpret per this guide."
             ),
         ),
     ] = None,
