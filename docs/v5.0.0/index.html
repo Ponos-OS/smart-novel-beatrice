@@ -1,0 +1,666 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>beatrice</title>
+    <link rel="stylesheet" href="stylesheets/spectaql.min.css" />
+    <script src="javascripts/spectaql.min.js"></script>
+    <script>window.SNB_DOCS_VERSION="v5.0.0";</script>
+  <script src="../version-switcher.js" defer></script>
+</head>
+  <body id="spectaql">
+    <div id="page" class="drawer-layout">
+      <div id="sidebar">
+        <div class="sidebar-top-container">
+          <div id="logo">
+          </div>
+          <button class="close-button" type="button">
+            <span aria-hidden="true">×</span>
+            <span class="sr-only">Close menu</span>
+          </button>
+        </div>
+        <nav id="nav" role="navigation">
+          <div class="nav-group">
+            <h4 class="nav-group-title">Introduction</h4>
+            <ul class="nav-group-items">
+              <li><a href="#introduction">Welcome</a></li>
+              <li><a href="#introduction-item-0">Endpoint</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <h4 class="nav-group-title">Operations</h4>
+            <ul class="nav-group-items">
+              <li class="nav-group-section">
+                <h5 class="nav-group-section-title">
+                  <a href="#group-Operations-Queries">Queries</a>
+                </h5>
+                <ul class="nav-group-section-items">
+                  <li><a href="#query-audioVoices">audioVoices</a></li>
+                  <li><a href="#query-healthcheck">healthcheck</a></li>
+                </ul>
+              </li>
+              <li class="nav-group-section">
+                <h5 class="nav-group-section-title">
+                  <a href="#group-Operations-Mutations">Mutations</a>
+                </h5>
+                <ul class="nav-group-section-items">
+                  <li><a href="#mutation-explainWord">explainWord</a></li>
+                  <li><a href="#mutation-generateAudio">generateAudio</a></li>
+                  <li><a href="#mutation-normalizeTextForTts">normalizeTextForTts</a></li>
+                </ul>
+              </li>
+              <li><a href="#"></a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <h4 class="nav-group-title">Types</h4>
+            <ul class="nav-group-items">
+              <li><a href="#definition-Boolean">Boolean</a></li>
+              <li><a href="#definition-GenerateAudioResult">GenerateAudioResult</a></li>
+              <li><a href="#definition-HealthCheck">HealthCheck</a></li>
+              <li><a href="#definition-String">String</a></li>
+              <li><a href="#definition-WordExplanationType">WordExplanationType</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div id="docs">
+        <div id="mobile-navbar">
+          <button class="sidebar-open-button" type="button">
+            <span class="hamburger"></span>
+            <span class="sr-only">All topics</span>
+          </button>
+        </div>
+        <article id="content">
+          <h1 class="doc-heading">beatrice</h1>
+          <div id="introduction" data-traverse-target="introduction">
+            <div id="welcome" class="doc-row">
+              <div class="doc-copy">
+                <p>GraphQL API for LLM-powered smart-novel features. The service is model-provider-agnostic — configure it against any OpenAI-compatible endpoint via env vars.</p>
+                <p>See the <a href="https://github.com/Ponos-OS/smart-novel-beatrice">repo</a> for setup and self-hosting instructions.</p>
+                <p><a href="./schema.graphql">Download schema.graphql</a> — the SDL for this version.</p>
+              </div>
+              <div class="doc-examples">
+                <div class="example-section welcome-contact-section">
+                  <h5>Contact</h5>
+                  <p class="contact-name">kasir-barati</p>
+                  <p class="contact-url"><a href="https://github.com/Ponos-OS/smart-novel-beatrice">https://github.com/Ponos-OS/smart-novel-beatrice</a></p>
+                </div>
+                <div class="example-section welcome-api-endpoints-section example-section-is-code">
+                  <h5>API Endpoints</h5>
+                  <pre><code>&lt;&lt;url is missing&gt;&gt;</code></pre>
+                </div>
+              </div>
+            </div>
+            <div id="introduction-item-0" class="introduction-item" data-traverse-target="introduction-item-0">
+              <h2 class="introduction-item-title">Endpoint</h2>
+              <div class="doc-row">
+                <div class="doc-copy">
+                  <p>All operations are served at <code>POST /graphql</code> on the deployed instance.</p>
+                </div>
+                <div class="doc-examples">
+                </div>
+              </div>
+            </div>
+          </div>
+          <h1 id="group-Operations-Queries" class="group-heading" data-traverse-target="group-Operations-Queries">Queries</h1>
+          <section id="query-audioVoices" class="operation operation-query" data-traverse-target="query-audioVoices">
+            <h2 class="operation-heading ">
+              <code>audioVoices</code>
+            </h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Voice names available for TTS synthesis, from the TTS__VOICES setting. English text only for now — this limitation will be addressed later.</p>
+                </div>
+              </div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-response doc-copy-section">
+                  <h5>Response</h5>
+                  <p> Returns <a href="#definition-String"><code>[String!]!</code></a>
+                  </p>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <h4 class="example-heading">Example</h4>
+                <div class="example-section example-section-is-code operation-query-example">
+                  <h5>Query</h5>
+                  <pre><code class="hljs language-gql"><span class="hljs-symbol"><span class="hljs-keyword">query</span> audioVoices <span class="hljs-tag">{
+  <span class="hljs-symbol">audioVoices</span>
+}</span></span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-response-example">
+                  <h5>Response</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"audioVoices"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"xyz789"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="query-healthcheck" class="operation operation-query" data-traverse-target="query-healthcheck">
+            <div class="operation-group-name">
+              <a href="#group-Operations-Queries">Queries</a>
+            </div>
+            <h2 class="operation-heading ">
+              <code>healthcheck</code>
+            </h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Healthcheck API which returns basic info about the service and if it is running.</p>
+                </div>
+              </div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-response doc-copy-section">
+                  <h5>Response</h5>
+                  <p> Returns a <a href="#definition-HealthCheck"><code>HealthCheck!</code></a>
+                  </p>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <h4 class="example-heading">Example</h4>
+                <div class="example-section example-section-is-code operation-query-example">
+                  <h5>Query</h5>
+                  <pre><code class="hljs language-gql"><span class="hljs-symbol"><span class="hljs-keyword">query</span> healthcheck <span class="hljs-tag">{
+  <span class="hljs-symbol">healthcheck <span class="hljs-tag">{
+    <span class="hljs-symbol">isRunning</span>
+    <span class="hljs-symbol">model</span>
+    <span class="hljs-symbol">version</span>
+  }</span></span>
+}</span></span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-response-example">
+                  <h5>Response</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"healthcheck"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"isRunning"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"model"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"qwen2.5:3b"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"1.0.1"</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <h1 id="group-Operations-Mutations" class="group-heading" data-traverse-target="group-Operations-Mutations">Mutations</h1>
+          <section id="mutation-explainWord" class="operation operation-mutation" data-traverse-target="mutation-explainWord">
+            <h2 class="operation-heading ">
+              <code>explainWord</code>
+            </h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Return a structured explanation of a word as it is used in the given context.</p>
+                </div>
+              </div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-response doc-copy-section">
+                  <h5>Response</h5>
+                  <p> Returns a <a href="#definition-WordExplanationType"><code>WordExplanationType!</code></a>
+                  </p>
+                </div>
+                <div class="operation-arguments doc-copy-section">
+                  <h5>Arguments</h5>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>word</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> The single word to explain. Must be 1..64 characters. </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>context</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> The sentence or paragraph the word appears in — used to disambiguate its meaning. Must be 1..2000 characters. </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <h4 class="example-heading">Example</h4>
+                <div class="example-section example-section-is-code operation-query-example">
+                  <h5>Query</h5>
+                  <pre><code class="hljs language-gql"><span class="hljs-symbol"><span class="hljs-keyword">mutation</span> explainWord<span class="hljs-tag">(
+  <span class="hljs-code">$word</span>:<span class="hljs-type"> String!</span>,
+  <span class="hljs-code">$context</span>:<span class="hljs-type"> String!</span>
+)</span> <span class="hljs-tag">{
+  <span class="hljs-symbol">explainWord<span class="hljs-tag">(
+    word: <span class="hljs-code">$word</span>,
+    context: <span class="hljs-code">$context</span>
+  )</span> <span class="hljs-tag">{
+    <span class="hljs-symbol">meaning</span>
+    <span class="hljs-symbol">simplifiedExplanation</span>
+    <span class="hljs-symbol">synonyms</span>
+    <span class="hljs-symbol">antonyms</span>
+  }</span></span>
+}</span></span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-variables-example">
+                  <h5>Variables</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"word"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"impulse"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"context"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"She acted on impulse and booked a flight home the same night."</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-response-example">
+                  <h5>Response</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"explainWord"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"meaning"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"A sudden strong urge to do something impulsive."</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"simplifiedExplanation"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"A quick feeling that makes you want to do something without thinking."</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"synonyms"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"urge"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"whim"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"impulse"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"instinct"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"antonyms"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"hesitation"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"deliberation"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"restraint"</span><span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="mutation-generateAudio" class="operation operation-mutation" data-traverse-target="mutation-generateAudio">
+            <div class="operation-group-name">
+              <a href="#group-Operations-Mutations">Mutations</a>
+            </div>
+            <h2 class="operation-heading ">
+              <code>generateAudio</code>
+            </h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Queue a TTS synthesis job. Publishes to RabbitMQ and returns immediately (HTTP 202) with a jobId — actual synthesis and upload happen asynchronously; progress and completion are reported via statusCallbackUrl.</p>
+                </div>
+              </div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-response doc-copy-section">
+                  <h5>Response</h5>
+                  <p> Returns a <a href="#definition-GenerateAudioResult"><code>GenerateAudioResult!</code></a>
+                  </p>
+                </div>
+                <div class="operation-arguments doc-copy-section">
+                  <h5>Arguments</h5>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>text</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Text to synthesize. Length is capped by the GENERATE_AUDIO__MAX_TEXT_LENGTH env var. </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>voice</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Voice name — must be one returned by audioVoices. </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>genUploadUrl</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Callback Beatrice POSTs to exactly once, when it needs a presigned upload URL for the synthesized audio. Sent with header <code>Idempotency-Key: &lt;jobId&gt;</code>, so a retried call is recognized as the same request rather than minting a second presigned URL. Must respond with JSON shaped <code>{"url": "&lt;presigned-url&gt;"}</code> — Beatrice then PUTs the audio bytes directly to that URL with <code>Content-Type: audio/mpeg</code>. Host must be in the GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS allow-list. The callback receives a JSON body <code>{"clientContextId": "&lt;value&gt;"}</code> when the caller supplied <code>clientContextId</code>, and no body otherwise. </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>statusCallbackUrl</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Callback Beatrice POSTs progress/state updates to, exactly one call per status, best-effort (a failed delivery is logged and never fails the job or blocks retries). Every body includes <code>"jobId": "&lt;jobId&gt;"</code>, plus <code>"clientContextId": "&lt;value&gt;"</code> when the caller supplied <code>clientContextId</code>. Bodies, in order: <code>{"status": "queued", "progress": &lt;int&gt;, "jobId": "&lt;jobId&gt;", "clientContextId": "&lt;value&gt;"}</code>; <code>{"status": "generating", "progress": &lt;int&gt;, "jobId": "&lt;jobId&gt;", "clientContextId": "&lt;value&gt;"}</code>; <code>{"status": "uploading", "progress": &lt;int&gt;, "jobId": "&lt;jobId&gt;", "clientContextId": "&lt;value&gt;"}</code>; then either <code>{"status": "completed", "fileSizeBytes": &lt;int&gt;, "jobId": "&lt;jobId&gt;", "clientContextId": "&lt;value&gt;"}</code> or <code>{"status": "failed", "failedAt": "&lt;iso8601&gt;", "error": {"code": "TTS_PROVIDER_ERROR" | "UPLOAD_ERROR", "message": "&lt;str&gt;"}, "jobId": "&lt;jobId&gt;", "clientContextId": "&lt;value&gt;"}</code>. <code>progress</code> is present with an integer value on <code>queued</code>/<code>generating</code>/<code>uploading</code> and absent on <code>"completed"</code>/<code>"failed"</code>. It means only "a bigger number is later for this job" — no meaning is attached to specific values, and they aren't guaranteed to stay stable across a Beatrice release. <code>clientContextId</code> is omitted entirely when the caller didn't supply one. No response body is expected. Host must be in the GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS allow-list. </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>instruct</code></span> - <span class="property-type"><a href="#definition-String"><code>String</code></a></span>
+                        </td>
+                        <td> A style guide applied to the whole call, e.g. 'A male narrator with a clear voice. Treat bracketed words like [dramatic] as emotion cues, not literal text.' Sent to the TTS endpoint as <code>instructions</code>; whether it is honored depends on the configured model. text is never parsed or stripped by Beatrice — any inline tags in it are passed through verbatim for the model to interpret per this guide. Default = <code>null</code> </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>clientContextId</code></span> - <span class="property-type"><a href="#definition-String"><code>String</code></a></span>
+                        </td>
+                        <td> Opaque caller-supplied value. Beatrice never interprets or validates it — it's stored alongside the job and echoed back verbatim, as <code>clientContextId</code>, in every <code>statusCallbackUrl</code> body and in the <code>genUploadUrl</code> POST. Useful for correlating callbacks that may arrive before the mutation response does. Default = <code>null</code> </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <h4 class="example-heading">Example</h4>
+                <div class="example-section example-section-is-code operation-query-example">
+                  <h5>Query</h5>
+                  <pre><code class="hljs language-gql"><span class="hljs-symbol"><span class="hljs-keyword">mutation</span> generateAudio<span class="hljs-tag">(
+  <span class="hljs-code">$text</span>:<span class="hljs-type"> String!</span>,
+  <span class="hljs-code">$voice</span>:<span class="hljs-type"> String!</span>,
+  <span class="hljs-code">$genUploadUrl</span>:<span class="hljs-type"> String!</span>,
+  <span class="hljs-code">$statusCallbackUrl</span>:<span class="hljs-type"> String!</span>,
+  <span class="hljs-code">$instruct</span>:<span class="hljs-type"> String,</span>
+  <span class="hljs-code">$clientContextId</span>:<span class="hljs-type"> String
+</span>)</span> <span class="hljs-tag">{
+  <span class="hljs-symbol">generateAudio<span class="hljs-tag">(
+    text: <span class="hljs-code">$text</span>,
+    voice: <span class="hljs-code">$voice</span>,
+    genUploadUrl: <span class="hljs-code">$genUploadUrl</span>,
+    statusCallbackUrl: <span class="hljs-code">$statusCallbackUrl</span>,
+    instruct: <span class="hljs-code">$instruct</span>,
+    clientContextId: <span class="hljs-code">$clientContextId</span>
+  )</span> <span class="hljs-tag">{
+    <span class="hljs-symbol">jobId</span>
+  }</span></span>
+}</span></span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-variables-example">
+                  <h5>Variables</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"text"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"The graffiti was ephemeral."</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"voice"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"abc123"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"genUploadUrl"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"abc123"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"statusCallbackUrl"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"abc123"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"instruct"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"clientContextId"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-response-example">
+                  <h5>Response</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"generateAudio"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"jobId"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"550e8400-e29b-41d4-a716-446655440000"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="mutation-normalizeTextForTts" class="operation operation-mutation" data-traverse-target="mutation-normalizeTextForTts">
+            <div class="operation-group-name">
+              <a href="#group-Operations-Mutations">Mutations</a>
+            </div>
+            <h2 class="operation-heading ">
+              <code>normalizeTextForTts</code>
+            </h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Return an LLM-normalised version of the given text suitable for TTS.</p>
+                </div>
+              </div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="operation-response doc-copy-section">
+                  <h5>Response</h5>
+                  <p> Returns a <a href="#definition-String"><code>String!</code></a>
+                  </p>
+                </div>
+                <div class="operation-arguments doc-copy-section">
+                  <h5>Arguments</h5>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <span class="property-name"><code>text</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Raw text to be normalised for TTS — numbers, acronyms, symbols, and dates are rewritten into the form a speech engine can read aloud naturally. Must be 1..4000 characters. </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <h4 class="example-heading">Example</h4>
+                <div class="example-section example-section-is-code operation-query-example">
+                  <h5>Query</h5>
+                  <pre><code class="hljs language-gql"><span class="hljs-symbol"><span class="hljs-keyword">mutation</span> normalizeTextForTts<span class="hljs-tag">(<span class="hljs-code">$text</span>:<span class="hljs-type"> String!</span>)</span> <span class="hljs-tag">{
+  <span class="hljs-symbol">normalizeTextForTts<span class="hljs-tag">(text: <span class="hljs-code">$text</span>)</span></span>
+}</span></span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-variables-example">
+                  <h5>Variables</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"text"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Dr. Smith met with 3 clients at 9am on 12/03/2024."</span><span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+                <div class="example-section example-section-is-code operation-response-example">
+                  <h5>Response</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"normalizeTextForTts"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"abc123"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <h1 id="group-Types" class="group-heading" data-traverse-target="group-Types">Types</h1>
+          <section id="definition-Boolean" class="definition definition-scalar" data-traverse-target="definition-Boolean">
+            <h2 class="definition-heading">Boolean</h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="definition-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>The <code>Boolean</code> scalar type represents <code>true</code> or <code>false</code>.</p>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <div class="example-section example-section-is-code">
+                  <h5>Example</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="definition-GenerateAudioResult" class="definition definition-object" data-traverse-target="definition-GenerateAudioResult">
+            <div class="definition-group-name">
+              <a href="#group-Types">Types</a>
+            </div>
+            <h2 class="definition-heading">GenerateAudioResult</h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="definition-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Result of queuing a generateAudio job.</p>
+                </div>
+                <div class="definition-properties doc-copy-section">
+                  <h5>Fields</h5>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Field Name</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>jobId</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> UUID identifying this synthesis job. Use it to correlate statusCallbackUrl updates. </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <div class="example-section example-section-is-code">
+                  <h5>Example</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"jobId"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"550e8400-e29b-41d4-a716-446655440000"</span><span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="definition-HealthCheck" class="definition definition-object" data-traverse-target="definition-HealthCheck">
+            <div class="definition-group-name">
+              <a href="#group-Types">Types</a>
+            </div>
+            <h2 class="definition-heading">HealthCheck</h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="definition-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Snapshot of service liveness and configured model.</p>
+                </div>
+                <div class="definition-properties doc-copy-section">
+                  <h5>Fields</h5>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Field Name</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>isRunning</code></span> - <span class="property-type"><a href="#definition-Boolean"><code>Boolean!</code></a></span>
+                        </td>
+                        <td> Always true when this resolver executes. </td>
+                      </tr>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>model</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> LLM model this service is currently configured to use. </td>
+                      </tr>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>version</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Service version — matches the Docker Hub image tag published from the same commit. </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <div class="example-section example-section-is-code">
+                  <h5>Example</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"isRunning"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-attr">"model"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"qwen2.5:3b"</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"1.0.1"</span><span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="definition-String" class="definition definition-scalar" data-traverse-target="definition-String">
+            <div class="definition-group-name">
+              <a href="#group-Types">Types</a>
+            </div>
+            <h2 class="definition-heading">String</h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="definition-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>The <code>String</code> scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.</p>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <div class="example-section example-section-is-code">
+                  <h5>Example</h5>
+                  <pre><code class="hljs language-gql"><span class="hljs-symbol">"xyz789"</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="definition-WordExplanationType" class="definition definition-object" data-traverse-target="definition-WordExplanationType">
+            <div class="definition-group-name">
+              <a href="#group-Types">Types</a>
+            </div>
+            <h2 class="definition-heading">WordExplanationType</h2>
+            <div class="doc-row">
+              <div class="doc-copy">
+                <div class="definition-description doc-copy-section">
+                  <h5>Description</h5>
+                  <p>Structured explanation of one word as it is used in a specific context.</p>
+                </div>
+                <div class="definition-properties doc-copy-section">
+                  <h5>Fields</h5>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Field Name</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>meaning</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Concise dictionary-style definition of the word as used in context. </td>
+                      </tr>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>simplifiedExplanation</code></span> - <span class="property-type"><a href="#definition-String"><code>String!</code></a></span>
+                        </td>
+                        <td> Same idea expressed for a younger or non-native reader. </td>
+                      </tr>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>synonyms</code></span> - <span class="property-type"><a href="#definition-String"><code>[String!]!</code></a></span>
+                        </td>
+                        <td> Up to five words meaning roughly the same thing. </td>
+                      </tr>
+                      <tr>
+                        <td data-property-name=""><span class="property-name"><code>antonyms</code></span> - <span class="property-type"><a href="#definition-String"><code>[String!]!</code></a></span>
+                        </td>
+                        <td> Up to five words meaning roughly the opposite. </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="doc-examples">
+                <div class="example-section example-section-is-code">
+                  <h5>Example</h5>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"meaning"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"A sudden strong urge to do something impulsive."</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"simplifiedExplanation"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"A quick feeling that makes you want to do something without thinking."</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"synonyms"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"urge"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"whim"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"impulse"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"instinct"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"antonyms"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"hesitation"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"deliberation"</span><span class="hljs-punctuation">,</span> <span class="hljs-string">"restraint"</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="doc-row no-margin">
+            <div class="doc-copy doc-separator">
+              <a class="powered-by" href="https://github.com/anvilco/spectaql">Documentation by <span>Anvil SpectaQL</span></a>
+            </div>
+          </div>
+        </article>
+        <div class="drawer-overlay"></div>
+      </div>
+    </div>
+  </body>
+</html>

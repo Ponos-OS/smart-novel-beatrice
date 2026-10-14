@@ -68,7 +68,7 @@ type Mutation {
     statusCallbackUrl: String!
 
     """
-    Qwen3-TTS-only. A style guide applied to the whole call, e.g. 'A male narrator with a clear voice. Treat bracketed words like [dramatic] as emotion cues, not literal text.' text is never parsed or stripped by Beatrice — any inline tags in it are passed through verbatim for the model to interpret per this guide. Rejected when the configured provider isn't Qwen3-TTS. Qwen3-TTS (and therefore instruct) is English-only for now.
+    A style guide applied to the whole call, e.g. 'A male narrator with a clear voice. Treat bracketed words like [dramatic] as emotion cues, not literal text.' Sent to the TTS endpoint as `instructions`; whether it is honored depends on the configured model. text is never parsed or stripped by Beatrice — any inline tags in it are passed through verbatim for the model to interpret per this guide.
     """
     instruct: String = null
 
@@ -86,7 +86,7 @@ type Query {
   healthcheck: HealthCheck!
 
   """
-  Voice names available for TTS synthesis, from the configured default provider. Cached for the process lifetime after the first call. English text only for now — this limitation will be addressed later.
+  Voice names available for TTS synthesis, from the TTS__VOICES setting. English text only for now — this limitation will be addressed later.
   """
   audioVoices: [String!]!
 }

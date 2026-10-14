@@ -6,7 +6,7 @@
     <title>beatrice</title>
     <link rel="stylesheet" href="stylesheets/spectaql.min.css" />
     <script src="javascripts/spectaql.min.js"></script>
-    <script>window.SNB_DOCS_VERSION="v4.1.0";</script>
+    <script>window.SNB_DOCS_VERSION="v5.0.0";</script>
   <script src="../version-switcher.js" defer></script>
 </head>
   <body id="spectaql">
@@ -113,7 +113,7 @@
               <div class="doc-copy">
                 <div class="operation-description doc-copy-section">
                   <h5>Description</h5>
-                  <p>Voice names available for TTS synthesis, from the configured default provider. Cached for the process lifetime after the first call. English text only for now — this limitation will be addressed later.</p>
+                  <p>Voice names available for TTS synthesis, from the TTS__VOICES setting. English text only for now — this limitation will be addressed later.</p>
                 </div>
               </div>
             </div>
@@ -136,7 +136,7 @@
                 </div>
                 <div class="example-section example-section-is-code operation-response-example">
                   <h5>Response</h5>
-                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"audioVoices"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"abc123"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"audioVoices"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"xyz789"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
 </code></pre>
                 </div>
               </div>
@@ -345,7 +345,7 @@
                         <td>
                           <span class="property-name"><code>instruct</code></span> - <span class="property-type"><a href="#definition-String"><code>String</code></a></span>
                         </td>
-                        <td> Qwen3-TTS-only. A style guide applied to the whole call, e.g. 'A male narrator with a clear voice. Treat bracketed words like [dramatic] as emotion cues, not literal text.' text is never parsed or stripped by Beatrice — any inline tags in it are passed through verbatim for the model to interpret per this guide. Rejected when the configured provider isn't Qwen3-TTS. Qwen3-TTS (and therefore instruct) is English-only for now. Default = <code>null</code> </td>
+                        <td> A style guide applied to the whole call, e.g. 'A male narrator with a clear voice. Treat bracketed words like [dramatic] as emotion cues, not literal text.' Sent to the TTS endpoint as <code>instructions</code>; whether it is honored depends on the configured model. text is never parsed or stripped by Beatrice — any inline tags in it are passed through verbatim for the model to interpret per this guide. Default = <code>null</code> </td>
                       </tr>
                       <tr>
                         <td>
@@ -460,7 +460,7 @@
                 </div>
                 <div class="example-section example-section-is-code operation-response-example">
                   <h5>Response</h5>
-                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"normalizeTextForTts"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"xyz789"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
+                  <pre><code class="hljs language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">"data"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span><span class="hljs-attr">"normalizeTextForTts"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"abc123"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">}</span>
 </code></pre>
                 </div>
               </div>
