@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+  # Manual runs only check (unit tests + integration tests); they never release or publish.
+  workflow_dispatch:
+    inputs:
+      dump_container_logs:
+        description: Print app/worker container logs after the integration tests (DUMP_CONTAINER_LOGS)
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -138,7 +145,7 @@ jobs:
     name: Run integration tests
     needs: check_release
     # Gated behind will_release on purpose. This job builds/boots Ollama + the full app image via Testcontainers, which is expensive, and a docs-only push shouldn't pay that cost. The tradeoff we accepted: a commit message which is not releasing a new version (look at .releaserc.json for more info) might break tests and they won't be caught here until some later commit does trigger a release — and even then, a push can bundle several commits, so a red run only gives "somewhere in this push", not a single commit to blame. We considered narrowing the gate to skip only genuinely docs-only pushes (by diffed file paths) and run it for chore/refactor too, but decided the added complexity wasn't worth it right now — check_wire_contract_test_coverage.py (in unit_tests above, which always runs) is the actual backstop against this class of miss; re-open this if that proves insufficient in practice.
-    if: ${{ needs.check_release.outputs.will_release == 'true' }}
+    if: ${{ needs.check_release.outputs.will_release == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -171,11 +178,15 @@ jobs:
             OLLAMA_MODEL=qwen2.5:3b
 
       - name: Run integration tests
+        env:
+          # Empty string (not "0") when off: tests/conftest.py only checks truthiness.
+          DUMP_CONTAINER_LOGS: ${{ inputs.dump_container_logs && '1' || '' }}
         run: make integration_test
 
   release:
     name: Release + publish Docker image
     needs: [unit_tests, evals, integration_tests]
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
