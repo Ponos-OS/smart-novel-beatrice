@@ -10,9 +10,9 @@ from collections.abc import Callable
 
 import aio_pika
 import pytest
+from botocore.client import BaseClient
+from botocore.exceptions import ClientError
 from httpx import AsyncClient
-from minio import Minio
-from minio.error import S3Error
 from testcontainers.core.container import DockerContainer
 
 from tests.wiremock import WireMockClient
@@ -229,14 +229,14 @@ async def test_generate_audio_pipeline_uploads_the_file_and_reports_completion(
     http_client: AsyncClient,
     wiremock: WireMockClient,
     worker_container: DockerContainer,
-    minio_verify_client: Minio,
-    minio_bucket: str,
+    s3_verify_client: BaseClient,
+    s3_bucket: str,
     presigned_upload_url_factory: Callable[[str], str],
 ) -> None:
     """
     Drives a job end-to-end through steps 3-5: generateAudio publishes it, the worker
-    consumes it, synthesizes against a stubbed provider, and uploads to a real MinIO
-    presigned URL obtained through a stubbed genUploadUrl.
+    consumes it, synthesizes against a stubbed provider, and uploads to a real S3-compatible
+    store through a presigned URL obtained through a stubbed genUploadUrl.
     """
 
     audio_bytes = b"fake-audio-bytes-from-the-stubbed-provider"
@@ -257,10 +257,12 @@ async def test_generate_audio_pipeline_uploads_the_file_and_reports_completion(
     assert response.status_code == 202, response.text
     job_id = response.json()["data"]["generateAudio"]["jobId"]
 
-    stat = await _wait_for_object(minio_verify_client, minio_bucket, object_name)
+    head = await _wait_for_object(s3_verify_client, s3_bucket, object_name)
 
-    assert stat.size == len(audio_bytes)
-    assert minio_verify_client.get_object(minio_bucket, object_name).read() == audio_bytes
+    assert head["ContentLength"] == len(audio_bytes)
+    assert (
+        s3_verify_client.get_object(Bucket=s3_bucket, Key=object_name)["Body"].read() == audio_bytes
+    )
 
     status_updates = [json.loads(r["body"]) for r in wiremock.requests_for("/status-callback")]
     completed = next(u for u in status_updates if u.get("status") == "completed")
@@ -271,7 +273,10 @@ async def test_generate_audio_pipeline_uploads_the_file_and_reports_completion(
         "clientContextId": "chapter-42",
     }
     statuses_seen = [u["status"] for u in status_updates]
-    assert statuses_seen == ["queued", "generating", "uploading", "completed"]
+    # `queued` is reported after the publish, so the worker may already be reporting
+    # `generating` by the time it lands; only the worker's own order is guaranteed.
+    assert sorted(statuses_seen) == sorted(["queued", "generating", "uploading", "completed"])
+    assert [s for s in statuses_seen if s != "queued"] == ["generating", "uploading", "completed"]
     assert all(u["jobId"] == job_id for u in status_updates)
     assert all(u["clientContextId"] == "chapter-42" for u in status_updates)
     progress_by_status = {
@@ -287,8 +292,8 @@ async def test_generate_audio_pipeline_forwards_instruct_to_the_provider(
     http_client: AsyncClient,
     wiremock: WireMockClient,
     worker_container: DockerContainer,
-    minio_verify_client: Minio,
-    minio_bucket: str,
+    s3_verify_client: BaseClient,
+    s3_bucket: str,
     presigned_upload_url_factory: Callable[[str], str],
 ) -> None:
     """Same pipeline as above, but asserting instruct reaches the provider's request body."""
@@ -310,22 +315,24 @@ async def test_generate_audio_pipeline_forwards_instruct_to_the_provider(
 
     assert response.status_code == 202, response.text
 
-    await _wait_for_object(minio_verify_client, minio_bucket, object_name)
+    await _wait_for_object(s3_verify_client, s3_bucket, object_name)
 
     synthesize_requests = wiremock.requests_for(_SYNTHESIZE_PATH)
     assert len(synthesize_requests) == 1
     assert json.loads(synthesize_requests[0]["body"])["instructions"] == "speak in a whisper"
 
 
-async def _wait_for_object(client: Minio, bucket: str, object_name: str, timeout: float = 20.0):
-    """Poll MinIO for an object the worker uploads asynchronously, out-of-band."""
+async def _wait_for_object(
+    client: BaseClient, bucket: str, object_name: str, timeout: float = 20.0
+):
+    """Poll the object store for an object the worker uploads asynchronously, out-of-band."""
 
     deadline = asyncio.get_event_loop().time() + timeout
 
     while True:
         try:
-            return client.stat_object(bucket, object_name)
-        except S3Error:
+            return client.head_object(Bucket=bucket, Key=object_name)
+        except ClientError:
             if asyncio.get_event_loop().time() >= deadline:
                 raise
             await asyncio.sleep(0.5)

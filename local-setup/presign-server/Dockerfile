@@ -4,7 +4,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir fastapi "uvicorn[standard]" minio
+RUN pip install --no-cache-dir fastapi "uvicorn[standard]" boto3
 
 COPY server.py /app/server.py
 WORKDIR /app

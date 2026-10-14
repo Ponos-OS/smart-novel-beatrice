@@ -11,17 +11,18 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
+import boto3
 import docker
 import docker.errors
 import pytest
 import pytest_asyncio
+from botocore.client import BaseClient
+from botocore.config import Config
 from httpx import AsyncClient
-from minio import Minio
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
 from testcontainers.core.network import Network
 from testcontainers.core.wait_strategies import HttpWaitStrategy, LogMessageWaitStrategy
-from testcontainers.minio import MinioContainer
 from testcontainers.ollama import OllamaContainer
 
 from tests.wiremock import WireMockClient
@@ -54,10 +55,14 @@ OTEL_COLLECTOR_CONFIG = Path(__file__).resolve().parent / "fixtures" / "otel-col
 WIREMOCK_IMAGE = "wiremock/wiremock:3.9.2"
 WIREMOCK_PORT = 8080
 WIREMOCK_NETWORK_ALIAS = "wiremock"
-MINIO_IMAGE = "quay.io/minio/minio:RELEASE.2025-04-08T15-41-24Z"
-MINIO_NETWORK_ALIAS = "minio"
-MINIO_TEST_BUCKET = "beatrice-test"
-MC_IMAGE = "quay.io/minio/mc:RELEASE.2025-04-08T15-39-49Z"
+S3_IMAGE = "rustfs/rustfs:1.0.1"
+S3_PORT = 9000
+S3_NETWORK_ALIAS = "s3"
+S3_ACCESS_KEY = "s3admin"
+S3_SECRET_KEY = "s3admin-secret"
+S3_TEST_BUCKET = "beatrice-test"
+S3_REGION = "us-east-1"
+AWS_CLI_IMAGE = "amazon/aws-cli:2.38.1"
 RABBITMQ_IMAGE = "rabbitmq:3.13-management-alpine"
 RABBITMQ_PORT = 5672
 RABBITMQ_NETWORK_ALIAS = "rabbitmq"
@@ -286,7 +291,7 @@ async def http_client(app_base_url: str) -> AsyncIterator[AsyncClient]:
 # Callback + object storage doubles (generateAudio pipeline)
 #
 # WireMock stands in for the client-owned callback endpoints (genUploadUrl,
-# statusCallbackUrl) instead of a hand-rolled stub HTTP server. MinIO stands in
+# statusCallbackUrl) instead of a hand-rolled stub HTTP server. the S3-compatible store stands in
 # for the S3-compatible object store: real presigned PUT URLs, not a mock of
 # the presign/upload contract.
 # ---------------------------------------------------------------------------
@@ -330,13 +335,17 @@ def wiremock(wiremock_container: DockerContainer) -> Iterator[WireMockClient]:
 
 
 @pytest.fixture(scope="session")
-def minio_container(docker_network: Network) -> Iterator[MinioContainer]:
-    """MinIO instance reachable from the app container as ``minio:9000``."""
+def s3_container(docker_network: Network) -> Iterator[DockerContainer]:
+    """S3-compatible object store (RustFS) reachable from the app container as ``s3:9000``."""
 
     container = (
-        MinioContainer(MINIO_IMAGE)
+        DockerContainer(S3_IMAGE)
+        .with_exposed_ports(S3_PORT)
+        .with_env("RUSTFS_ACCESS_KEY", S3_ACCESS_KEY)
+        .with_env("RUSTFS_SECRET_KEY", S3_SECRET_KEY)
         .with_network(docker_network)
-        .with_network_aliases(MINIO_NETWORK_ALIAS)
+        .with_network_aliases(S3_NETWORK_ALIAS)
+        .waiting_for(HttpWaitStrategy(S3_PORT, "/health").with_startup_timeout(60))
     )
 
     with container:
@@ -344,22 +353,21 @@ def minio_container(docker_network: Network) -> Iterator[MinioContainer]:
 
 
 @pytest.fixture(scope="session")
-def minio_bucket(minio_container: MinioContainer, docker_network: Network) -> str:
+def s3_bucket(s3_container: DockerContainer, docker_network: Network) -> str:
     """
-    Create the test bucket via the ``mc`` CLI (matching how a real deployment
+    Create the test bucket via the AWS CLI (matching how a real deployment
     provisions buckets), running as a short-lived container on the shared network.
     """
 
-    setup_command = (
-        f"mc alias set local http://{MINIO_NETWORK_ALIAS}:{minio_container.port} "
-        f"{minio_container.access_key} {minio_container.secret_key} "
-        f"&& mc mb --ignore-existing local/{MINIO_TEST_BUCKET}"
-    )
     setup_container = (
-        DockerContainer(MC_IMAGE)
+        DockerContainer(AWS_CLI_IMAGE)
         .with_network(docker_network)
-        .with_kwargs(entrypoint="/bin/sh")
-        .with_command(f'-c "{setup_command}"')
+        .with_env("AWS_ACCESS_KEY_ID", S3_ACCESS_KEY)
+        .with_env("AWS_SECRET_ACCESS_KEY", S3_SECRET_KEY)
+        .with_env("AWS_DEFAULT_REGION", S3_REGION)
+        .with_command(
+            f"--endpoint-url http://{S3_NETWORK_ALIAS}:{S3_PORT} s3 mb s3://{S3_TEST_BUCKET}"
+        )
     )
     setup_container.start()
     exit_code = setup_container.get_wrapped_container().wait()["StatusCode"]
@@ -368,47 +376,53 @@ def minio_bucket(minio_container: MinioContainer, docker_network: Network) -> st
 
     if exit_code != 0:
         raise RuntimeError(
-            f"mc bucket setup failed (exit {exit_code}):\n{stdout.decode(errors='replace')}"
+            f"bucket setup failed (exit {exit_code}):\n{stdout.decode(errors='replace')}"
             f"\n{stderr.decode(errors='replace')}"
         )
 
-    return MINIO_TEST_BUCKET
+    return S3_TEST_BUCKET
 
 
 @pytest.fixture(scope="session")
-def minio_verify_client(minio_container: MinioContainer) -> Minio:
+def s3_verify_client(s3_container: DockerContainer) -> BaseClient:
     """Host-reachable client for asserting on what actually landed in the bucket."""
 
-    return minio_container.get_client()
+    host = s3_container.get_container_host_ip()
+    port = s3_container.get_exposed_port(S3_PORT)
+
+    return _s3_client(f"http://{host}:{port}")
+
+
+def _s3_client(endpoint_url: str) -> BaseClient:
+    return boto3.client(
+        "s3",
+        endpoint_url=endpoint_url,
+        aws_access_key_id=S3_ACCESS_KEY,
+        aws_secret_access_key=S3_SECRET_KEY,
+        region_name=S3_REGION,
+        config=Config(signature_version="s3v4", s3={"addressing_style": "path"}),
+    )
 
 
 PresignedUploadUrlFactory = Callable[[str], str]
 
 
 @pytest.fixture(scope="session")
-def presigned_upload_url_factory(
-    minio_container: MinioContainer, minio_bucket: str
-) -> PresignedUploadUrlFactory:
+def presigned_upload_url_factory(s3_bucket: str) -> PresignedUploadUrlFactory:
     """
-    Returns a factory that mints a presigned PUT URL against the ``minio`` network
+    Returns a factory that mints a presigned PUT URL against the ``s3`` network
     alias — reachable from the app container, unlike the host-exposed port
-    ``minio_verify_client`` uses. Presigning is a local HMAC computation and needs
-    no network call, but the client must be given ``region`` explicitly — without
-    it, the SDK looks the region up over HTTP, and "minio" only resolves inside
-    the docker network, not from this (host-side) test process.
+    ``s3_verify_client`` uses. Presigning is a local HMAC computation and needs
+    no network call.
     """
 
-    internal_client = Minio(
-        endpoint=f"{MINIO_NETWORK_ALIAS}:{minio_container.port}",
-        access_key=minio_container.access_key,
-        secret_key=minio_container.secret_key,
-        secure=False,
-        region="us-east-1",
-    )
+    internal_client = _s3_client(f"http://{S3_NETWORK_ALIAS}:{S3_PORT}")
 
     def _make(object_name: str) -> str:
-        return internal_client.presigned_put_object(
-            minio_bucket, object_name, expires=timedelta(minutes=10)
+        return internal_client.generate_presigned_url(
+            "put_object",
+            Params={"Bucket": s3_bucket, "Key": object_name},
+            ExpiresIn=int(timedelta(minutes=10).total_seconds()),
         )
 
     return _make
