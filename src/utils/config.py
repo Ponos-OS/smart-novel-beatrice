@@ -11,7 +11,7 @@ from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field, model_validator
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -70,73 +70,25 @@ class NormalizeTtsOverride(EndpointOverride):
     )
 
 
-class GeminiTtsSettings(BaseSettings):
-    """Google Cloud Text-to-Speech."""
+class Tts(BaseSettings):
+    """OpenAI-compatible `POST {base_url}/audio/speech` backend (OpenAI, OpenRouter, local shim)."""
 
-    base_url: str = Field(default="https://texttospeech.googleapis.com")
-    api_key: str | None = Field(default=None, description="Sent as the X-Goog-Api-Key header.")
-    voices_path: str = Field(default="/v1/voices")
-    timeout_ms: int = Field(default=30_000, ge=1_000)
-
-
-class QwenTtsSettings(BaseSettings):
-    """
-    Qwen3-TTS, served through Alibaba Cloud DashScope's native REST API.
-
-    DashScope has no voices-listing endpoint — voices are documented statically,
-    not queryable — so ``voices`` is a static, comma-separated list read from
-    ``TTS__QWEN__VOICES`` instead of a ``voices_path`` to call.
-    """
-
-    base_url: str = Field(default="https://dashscope-intl.aliyuncs.com")
-    api_key: str | None = Field(default=None)
-    model: str = Field(default="qwen3-tts-instruct-flash")
+    base_url: str = Field(description="OpenAI-compatible endpoint, e.g. https://api.openai.com/v1.")
+    api_key: str = Field(description="Sent as the Bearer token.")
+    model: str = Field(description="Model name sent in every speech request.")
     voices: str = Field(
-        default="",
-        description="Comma-separated static voice names (no voices-listing endpoint exists).",
+        description="Comma-separated static voice names (the contract has no voice-listing endpoint).",
     )
-    synthesize_path: str = Field(default="/api/v1/services/aigc/multimodal-generation/generation")
-    timeout_ms: int = Field(default=30_000, ge=1_000)
+    timeout_ms: int = Field(
+        default=30_000,
+        ge=1_000,
+        description="Timeout for individual TTS calls, in milliseconds.",
+    )
+    output_dir: Path = Field(default_factory=lambda: Path(tempfile.gettempdir()) / "beatrice-audio")
 
     @property
     def voices_list(self) -> list[str]:
         return [voice.strip() for voice in self.voices.split(",") if voice.strip()]
-
-
-class TtsProviderName(StrEnum):
-    QWEN3_TTS = "qwen3-tts"
-    GEMINI_TTS = "gemini-tts"
-
-
-class Tts(BaseSettings):
-    """TTS provider abstraction layer configuration."""
-
-    output_dir: Path = Field(default_factory=lambda: Path(tempfile.gettempdir()) / "beatrice-audio")
-    default_provider: TtsProviderName = Field(
-        default=TtsProviderName.QWEN3_TTS,
-        description="Which provider backs audioVoices/generateAudio when the caller doesn't pick one.",
-    )
-    # pyright can't see that pydantic-settings populates these from TTS__QWEN__*/TTS__GEMINI__*
-    # env vars before construction completes, so it flags the zero-arg default_factory call as
-    # if QwenTtsSettings()/GeminiTtsSettings() had to satisfy their required fields with nothing.
-    qwen: QwenTtsSettings = Field(default_factory=QwenTtsSettings)  # pyright: ignore[reportArgumentType]
-    gemini: GeminiTtsSettings = Field(
-        default_factory=GeminiTtsSettings  # pyright: ignore[reportArgumentType]
-    )
-
-    @model_validator(mode="after")
-    def _require_default_provider_api_key(self) -> Tts:
-        """Only the selected provider needs an API key"""
-
-        if self.default_provider is TtsProviderName.QWEN3_TTS and not self.qwen.api_key:
-            raise ValueError("TTS__QWEN__API_KEY is required when TTS__DEFAULT_PROVIDER=qwen3-tts")
-
-        if self.default_provider is TtsProviderName.GEMINI_TTS and not self.gemini.api_key:
-            raise ValueError(
-                "TTS__GEMINI__API_KEY is required when TTS__DEFAULT_PROVIDER=gemini-tts"
-            )
-
-        return self
 
 
 class CallbackSettings(BaseSettings):
@@ -242,7 +194,7 @@ class Settings(BaseSettings):
 
         return data["project"]["name"]
 
-    # Same pyright limitation as Tts.qwen/gemini above: these are populated from LLM__*/
+    # pyright can't see that these are populated from LLM__*/
     # RABBITMQ__*/OTEL__*/TTS__* env vars, not by literally calling Llm()/RabbitMq()/Otel()/
     # Tts() with no arguments.
     logging: Logging = Field(default_factory=Logging)

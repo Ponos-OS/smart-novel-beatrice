@@ -8,14 +8,19 @@ import pytest
 
 from src.modules.audio.exceptions import TtsProviderError
 from src.modules.audio.qwen_provider import Qwen3TtsProvider
-from src.utils import QwenTtsSettings
+from src.utils import Tts
 
 
 _AUDIO_URL = "https://dashscope-intl.aliyuncs.com/audio/output.wav"
 
 
-def _settings() -> QwenTtsSettings:
-    return QwenTtsSettings(api_key="test-key", voices="qwen-female-1,qwen-male-1")
+def _settings() -> Tts:
+    return Tts(
+        base_url="https://dashscope-intl.aliyuncs.com",
+        api_key="test-key",
+        model="qwen3-tts-instruct-flash",
+        voices="qwen-female-1,qwen-male-1",
+    )
 
 
 def _provider(tmp_path: Path, handler) -> Qwen3TtsProvider:

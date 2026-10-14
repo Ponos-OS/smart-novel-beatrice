@@ -130,10 +130,7 @@ async def test_generate_audio_publishes_instruct_when_given(
     rabbitmq_host_url: str,
 ) -> None:
     """
-    app_container (tests/conftest.py) defaults TTS__DEFAULT_PROVIDER to Qwen3-TTS, so
-    this only exercises the accept-and-publish path. The reject-when-Gemini path needs
-    a differently-configured app instance and is covered at the unit tier instead
-    (src/modules/audio/resolver__test.py::test_generate_audio_rejects_instruct_when_provider_is_not_qwen).
+    Exercises the accept-and-publish path for a request carrying `instruct`.
     """
 
     wiremock.stub("POST", "/status-callback", status=200, json_body={"ok": True})

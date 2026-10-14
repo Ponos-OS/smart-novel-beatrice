@@ -6,7 +6,7 @@ from src.modules.audio.exceptions import (
     InvalidVoiceError,
     TtsProviderError,
 )
-from src.modules.audio.provider import TtsProvider, TtsProviderName, build_provider
+from src.modules.audio.provider import TtsProvider, build_provider
 from src.modules.audio.resolver import GenerateAudioResult, generate_audio, resolve_audio_voices
 from src.modules.audio.types import (
     GenerateAudioJob,
@@ -27,7 +27,6 @@ __all__ = [
     "SynthesizedAudio",
     "TtsProvider",
     "TtsProviderError",
-    "TtsProviderName",
     "Voice",
     "build_provider",
     "generate_audio",

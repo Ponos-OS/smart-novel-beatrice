@@ -10,7 +10,6 @@ from src.utils import (
     CallbackSettings,
     LoggingMode,
     LogLevel,
-    QwenTtsSettings,
     Settings,
     get_settings,
 )
@@ -32,7 +31,10 @@ def _set_required_no_default_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("LLM__MODEL", "qwen2.5:3b")
     monkeypatch.setenv("OTEL__ENABLED", "false")
     monkeypatch.setenv("OTEL__EXPORTER_OTLP_ENDPOINT", "http://otel-collector:4318")
-    monkeypatch.setenv("TTS__QWEN__API_KEY", "test-key")  # default provider is qwen3-tts
+    monkeypatch.setenv("TTS__BASE_URL", "http://tts:8001/v1")
+    monkeypatch.setenv("TTS__API_KEY", "test-key")
+    monkeypatch.setenv("TTS__MODEL", "test-model")
+    monkeypatch.setenv("TTS__VOICES", "a,b")
 
 
 def test_defaults_when_environment_is_empty(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -41,6 +43,7 @@ def test_defaults_when_environment_is_empty(monkeypatch: pytest.MonkeyPatch, tmp
         if key.startswith(
             (
                 "LLM__",
+                "TTS__",
                 "OTEL__",
                 "LOGGING__",
                 "EXPLAIN_WORD__",
@@ -71,7 +74,10 @@ def test_defaults_when_environment_is_empty(monkeypatch: pytest.MonkeyPatch, tmp
         "LLM__MODEL",
         "OTEL__ENABLED",
         "OTEL__EXPORTER_OTLP_ENDPOINT",
-        "TTS__QWEN__API_KEY",
+        "TTS__BASE_URL",
+        "TTS__API_KEY",
+        "TTS__MODEL",
+        "TTS__VOICES",
     ],
 )
 def test_settings_has_no_default_for_production_risky_fields(
@@ -87,47 +93,24 @@ def test_settings_has_no_default_for_production_risky_fields(
         Settings()
 
 
-def test_settings_only_requires_api_key_for_the_default_tts_provider(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
-    """Gemini's key is irrelevant while qwen3-tts (the default) is the active provider."""
-
+def test_tts_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.chdir(tmp_path)
     _set_required_no_default_env(monkeypatch)
-    monkeypatch.delenv("TTS__GEMINI__API_KEY", raising=False)
+    monkeypatch.delenv("TTS__TIMEOUT_MS", raising=False)
 
     result = Settings()
 
-    assert result.tts.qwen.api_key == "test-key"
-    assert result.tts.gemini.api_key is None
+    assert result.tts.timeout_ms == 30_000
+    assert result.tts.model == "test-model"
 
 
-def test_settings_requires_gemini_api_key_when_it_is_the_default_provider(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
+def test_tts_rejects_timeout_below_one_second(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.chdir(tmp_path)
     _set_required_no_default_env(monkeypatch)
-    monkeypatch.setenv("TTS__DEFAULT_PROVIDER", "gemini-tts")
-    monkeypatch.delenv("TTS__GEMINI__API_KEY", raising=False)
-    monkeypatch.delenv("TTS__QWEN__API_KEY", raising=False)
+    monkeypatch.setenv("TTS__TIMEOUT_MS", "999")
 
     with pytest.raises(pydantic.ValidationError):
         Settings()
-
-
-def test_settings_does_not_require_qwen_api_key_when_gemini_is_the_default_provider(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
-    monkeypatch.chdir(tmp_path)
-    _set_required_no_default_env(monkeypatch)
-    monkeypatch.setenv("TTS__DEFAULT_PROVIDER", "gemini-tts")
-    monkeypatch.setenv("TTS__GEMINI__API_KEY", "gemini-key")
-    monkeypatch.delenv("TTS__QWEN__API_KEY", raising=False)
-
-    result = Settings()
-
-    assert result.tts.gemini.api_key == "gemini-key"
-    assert result.tts.qwen.api_key is None
 
 
 def test_environment_overrides_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -200,17 +183,9 @@ def test_callback_settings_allowed_hosts_list_splits_and_strips_whitespace() -> 
     assert result.allowed_hosts_list == ["a.example.com", "b.example.com"]
 
 
-def test_qwen_tts_settings_voices_list_defaults_empty() -> None:
-    result = QwenTtsSettings(api_key="test-key")
-
-    assert result.voices_list == []
-
-
-def test_qwen_tts_settings_voices_list_splits_and_strips_whitespace(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("TTS__QWEN__VOICES", "a,  b ,")
+def test_tts_voices_list_splits_and_strips_whitespace(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TTS__VOICES", "a,  b ,")
 
     result = Settings()
 
-    assert result.tts.qwen.voices_list == ["a", "b"]
+    assert result.tts.voices_list == ["a", "b"]

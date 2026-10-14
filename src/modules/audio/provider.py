@@ -10,10 +10,9 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from src.modules.audio.gemini_provider import GeminiTtsProvider
 from src.modules.audio.qwen_provider import Qwen3TtsProvider
 from src.modules.audio.types import SynthesizedAudio, Voice
-from src.utils import Settings, TtsProviderName
+from src.utils import Settings
 
 
 class TtsProvider(Protocol):
@@ -44,11 +43,7 @@ class TtsProvider(Protocol):
         ...
 
 
-def build_provider(name: TtsProviderName, settings: Settings) -> TtsProvider:
-    """Construct the configured provider client for `name`."""
+def build_provider(settings: Settings) -> TtsProvider:
+    """Construct the configured provider client."""
 
-    output_dir = settings.tts.output_dir
-
-    if name is TtsProviderName.QWEN3_TTS:
-        return Qwen3TtsProvider(settings.tts.qwen, output_dir)
-    return GeminiTtsProvider(settings.tts.gemini, output_dir)
+    return Qwen3TtsProvider(settings.tts, settings.tts.output_dir)

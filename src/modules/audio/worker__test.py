@@ -217,7 +217,7 @@ async def test_synthesize_job_reports_progress_then_calls_the_provider(
 ) -> None:
     result = SynthesizedAudio(file_path=tmp_path / "out.mp3")
     fake_provider = _FakeProvider(result)
-    monkeypatch.setattr(worker_module, "build_provider", lambda name, settings: fake_provider)
+    monkeypatch.setattr(worker_module, "build_provider", lambda settings: fake_provider)
     progress_calls: list[dict[str, Any]] = []
 
     async def _fake_report_progress(
@@ -251,7 +251,7 @@ async def test_synthesize_job_forwards_instruct_to_the_provider(
 ) -> None:
     result = SynthesizedAudio(file_path=tmp_path / "out.mp3")
     fake_provider = _FakeProvider(result)
-    monkeypatch.setattr(worker_module, "build_provider", lambda name, settings: fake_provider)
+    monkeypatch.setattr(worker_module, "build_provider", lambda settings: fake_provider)
     monkeypatch.setattr(worker_module, "report_progress", _async_noop)
 
     job = _job(instruct="speak in a whisper")
@@ -272,7 +272,7 @@ async def test_synthesize_job_closes_the_provider_even_if_synthesis_fails(
             raise RuntimeError("upstream boom")
 
     fake_provider = _FailingProvider(SynthesizedAudio(file_path=Path("/tmp/x")))
-    monkeypatch.setattr(worker_module, "build_provider", lambda name, settings: fake_provider)
+    monkeypatch.setattr(worker_module, "build_provider", lambda settings: fake_provider)
     monkeypatch.setattr(worker_module, "report_progress", _async_noop)
 
     with pytest.raises(RuntimeError, match="upstream boom"):
@@ -634,7 +634,7 @@ async def test_handle_message_success_log_contains_all_required_fields(
     assert record.job_id == "job-1"
     assert record.instance_id
     assert record.voice == "qwen-voice-a"
-    assert record.model == "qwen3-tts"
+    assert record.model == get_settings().tts.model
     assert record.state == "completed"
     assert record.attempt == 1
     assert record.max_attempt == 3
@@ -663,7 +663,7 @@ async def test_handle_message_failure_log_contains_all_required_fields(
     assert record.job_id == "job-1"
     assert record.instance_id
     assert record.voice == "qwen-voice-a"
-    assert record.model == "qwen3-tts"
+    assert record.model == get_settings().tts.model
     assert record.state == "generating"
     assert record.attempt == 1
     assert record.max_attempt == 3

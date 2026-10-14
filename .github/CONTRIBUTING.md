@@ -109,6 +109,6 @@ Prompts live at `src/modules/<module>/prompts/v1.jinja2`. The question that deci
 5. Use `uv`; ALWAYS `uv run xxx` NEVER `python3 xxx`.
 6. Use latest version of libraries and idiomatic approaches as of today.
 7. Class owning an `httpx.AsyncClient` → see the `httpx-async-transport` skill.
-8. An enum/type that a module needs _and_ that `Settings` needs to reference (e.g. to pick which of that module's implementations to use) belongs in `src/utils/config.py`, colocated with the other settings enums (`LoggingMode`, `LogLevel`, `TtsProviderName`), not in the module itself. `Settings` is imported nearly everywhere, so defining that type in the module instead creates a straight import cycle the moment `Settings` needs it too.
+8. An enum/type that a module needs _and_ that `Settings` needs to reference (e.g. to pick which of that module's implementations to use) belongs in `src/utils/config.py`, colocated with the other settings enums (`LoggingMode`, `LogLevel`), not in the module itself. `Settings` is imported nearly everywhere, so defining that type in the module instead creates a straight import cycle the moment `Settings` needs it too.
 9. Comma-separated / delimited env var on a `BaseSettings` field → see the `settings-list-env-field` skill.
 10. Asserting on `extra={...}` log fields via `caplog` → see the `caplog-extra-typing` skill.

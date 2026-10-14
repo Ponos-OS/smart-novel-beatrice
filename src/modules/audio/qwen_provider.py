@@ -1,7 +1,7 @@
 """
 Qwen3-TTS provider client, talking to Alibaba Cloud DashScope's native REST API
-directly. Voices are static config (`QwenTtsSettings.voices`) — see `QwenTtsSettings`
-for why. English-only for now: DashScope's request body takes a `language_type`
+directly. Voices are static config (`Tts.voices`) —
+English-only for now: DashScope's request body takes a `language_type`
 field, hardcoded here to `"English"`.
 """
 
@@ -14,17 +14,18 @@ import httpx
 
 from src.modules.audio.exceptions import TtsProviderError
 from src.modules.audio.types import SynthesizedAudio, Voice
-from src.utils import QwenTtsSettings
+from src.utils import Tts
 
 
 PROVIDER_NAME = "qwen3-tts"
 _LANGUAGE_TYPE = "English"
+_SYNTHESIZE_PATH = "/api/v1/services/aigc/multimodal-generation/generation"
 
 
 class Qwen3TtsProvider:
     def __init__(
         self,
-        settings: QwenTtsSettings,
+        settings: Tts,
         output_dir: Path,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
@@ -32,7 +33,7 @@ class Qwen3TtsProvider:
         self._output_dir = output_dir
         self._client = httpx.AsyncClient(
             base_url=settings.base_url,
-            headers={"Authorization": f"Bearer {settings.api_key}"} if settings.api_key else {},
+            headers={"Authorization": f"Bearer {settings.api_key}"},
             timeout=settings.timeout_ms / 1000,
             transport=transport,
         )
@@ -56,11 +57,11 @@ class Qwen3TtsProvider:
         if instruct is not None:
             body["instructions"] = instruct
 
-        response = await self._client.post(self._settings.synthesize_path, json=body)
+        response = await self._client.post(_SYNTHESIZE_PATH, json=body)
         if response.is_error:
             raise TtsProviderError(
                 provider=PROVIDER_NAME,
-                message=f"POST {self._settings.synthesize_path} -> {response.status_code}",
+                message=f"POST {_SYNTHESIZE_PATH} -> {response.status_code}",
                 status_code=response.status_code,
             )
 

@@ -9,3 +9,5 @@ IMPORTANT: you must complete this step before stopping.
 5. Append one short entry to `SELF_IMPROVE_LOG.md` (create it if missing) with the step number, date, what changed, and why. This log is the durable history — keep `PROCESS.md` and this file lean and let the log accumulate detail instead.
 
 IMPORTANT: you MUST include step 4, recursive self-improvement, every run.
+
+Also check whether the step's blockers were environmental (venv, `.env`, hooks) rather than code, and record those in the log so the next pass can skip the diagnosis.

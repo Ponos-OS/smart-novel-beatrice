@@ -93,7 +93,7 @@ async def synthesize_job(job: GenerateAudioJob, *, authorization: str | None) ->
     """Report generating progress and call the configured TTS provider for audio bytes."""
 
     settings = get_settings()
-    provider = build_provider(settings.tts.default_provider, settings)
+    provider = build_provider(settings)
     try:
         await report_progress(
             job.status_callback_url,
@@ -267,7 +267,7 @@ def _job_log_extra(
         "job_id": job.job_id,
         "instance_id": settings.instance_id,
         "voice": job.voice,
-        "model": settings.tts.default_provider.value,
+        "model": settings.tts.model,
         "state": state,
         "attempt": attempt,
         "max_attempt": settings.rabbitmq.delivery_limit,

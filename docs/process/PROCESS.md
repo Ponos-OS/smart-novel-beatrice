@@ -19,3 +19,5 @@
 9. IMPORTANT: follow the instructions in `SELF_IMPROVE.md` to improve yourself.
 
 You MUST complete step 9 (self-improvement) before you stop.
+
+10. Before the first test run of a feature, check `uv run pytest --version` works and the gitignored `.env` still matches `.env.example`'s var names: a stale `.venv` (shebangs pointing at a pre-transfer path) or a stale `.env` (old `TTS__QWEN__*` vars, rejected as `extra_forbidden`) looks like a code failure but isn't (surfaced by OpenAI-compatible-TTS step 1).

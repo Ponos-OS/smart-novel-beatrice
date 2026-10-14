@@ -20,7 +20,10 @@ def _sanitize_env_for_tests() -> None:
     os.environ.setdefault("LLM__API_KEY", "ollama")
     os.environ.setdefault("LLM__MODEL", "qwen2.5:3b")
     os.environ.setdefault("RABBITMQ__CONNECTION_STRING", "amqp://guest:guest@rabbitmq:5672/")
-    os.environ.setdefault("TTS__QWEN__API_KEY", "test-key")
+    os.environ.setdefault("TTS__BASE_URL", "http://tts:8001/v1")
+    os.environ.setdefault("TTS__API_KEY", "test-key")
+    os.environ.setdefault("TTS__MODEL", "test-model")
+    os.environ.setdefault("TTS__VOICES", "test-voice")
 
 
 _sanitize_env_for_tests()
