@@ -99,7 +99,7 @@ async def test_chunked_long_story_emits_gen_ai_token_metrics(
                 "query": NORMALIZE_TTS_MUTATION,
                 "variables": {"text": chunk},
             },
-            timeout=480.0,  # CPU-only inference is slow
+            timeout=1200.0,  # CPU-only inference is slow
         )
         assert response.status_code == 200, (index, response.text)
         body = response.json()
@@ -107,9 +107,6 @@ async def test_chunked_long_story_emits_gen_ai_token_metrics(
         payload = body["data"]["normalizeTextForTts"]
         assert isinstance(payload, str) and payload.strip(), (index, payload)
         normalised_chunks.append(payload)
-        print(f"\n--- chunk {index} (input {len(chunk)} chars → output {len(payload)} chars) ---")
-        print("INPUT :", chunk)
-        print("OUTPUT:", payload)
 
     # Assert
     spans = wait_for_spans(

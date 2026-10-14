@@ -118,6 +118,7 @@ schema:
 
 ## Runs linters
 lint_check:
+	uv run ruff format --check .
 	uv run ruff check .
 	uv run flake8 .
 	uv run python local-setup/scripts/check_private_imports.py

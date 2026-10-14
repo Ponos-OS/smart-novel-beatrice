@@ -236,7 +236,7 @@ dev = [
     { name = "pytest-cov", specifier = ">=6.0" },
     { name = "pytest-rerunfailures", specifier = ">=15.0" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "ruff", specifier = ">=0.8" },
+    { name = "ruff", specifier = "==0.15.20" },
     { name = "testcontainers", specifier = ">=4.8" },
 ]
 
