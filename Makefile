@@ -116,20 +116,22 @@ schema:
 	@echo "== wrote docs/schema.graphql ($$(wc -l < docs/schema.graphql) lines) =="
 	uv run pre-commit run --files docs/schema.graphql
 
-## Runs ruff linter on all files
+## Runs linters
 lint_check:
 	uv run ruff check .
 	uv run flake8 .
 	uv run python local-setup/scripts/check_private_imports.py
 	uv run python local-setup/scripts/check_wire_contract_test_coverage.py $(WIRE_CONTRACT_BASE)
+	uv run jscpd
 
-## Apply linter to all files
+## Apply linter
 lint:
 	uv run ruff format .
 	uv run pyright src
 	uv run ruff check --fix .
 	uv run flake8 .
 	uv run python local-setup/scripts/check_private_imports.py
+	uv run jscpd
 
 ## Remove build artefacts, caches, .venv, __pycache__
 clean:

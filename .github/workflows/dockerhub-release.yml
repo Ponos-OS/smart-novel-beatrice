@@ -72,11 +72,10 @@ jobs:
       - name: Install Python deps
         run: uv sync
 
-      # Cheap and diff-based (no Docker), so it runs unconditionally on every push unlike integration_tests below, this isn't worth gating behind will_release.
-      - name: Check wire-contract test coverage
+      - name: Lint
         env:
           DIFF_BASE_SHA: ${{ github.event.before }}
-        run: uv run python local-setup/scripts/check_wire_contract_test_coverage.py "$DIFF_BASE_SHA"
+        run: make lint_check WIRE_CONTRACT_BASE="$DIFF_BASE_SHA"
 
       - name: Run unit tests
         run: make test
