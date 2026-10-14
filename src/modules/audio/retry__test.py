@@ -72,7 +72,7 @@ def test_decide_retry_retries_a_timeout_with_no_status_code() -> None:
 
 
 def test_decide_retry_does_not_retry_a_tts_provider_error_with_a_4xx_status_code() -> None:
-    exc = TtsProviderError(provider="qwen3-tts", message="bad request", status_code=400)
+    exc = TtsProviderError(provider="openai-speech", message="bad request", status_code=400)
 
     result = decide_retry(exc, default_delay_seconds=30.0)
 
@@ -80,7 +80,7 @@ def test_decide_retry_does_not_retry_a_tts_provider_error_with_a_4xx_status_code
 
 
 def test_decide_retry_retries_a_tts_provider_error_with_a_5xx_status_code() -> None:
-    exc = TtsProviderError(provider="qwen3-tts", message="server error", status_code=503)
+    exc = TtsProviderError(provider="openai-speech", message="server error", status_code=503)
 
     result = decide_retry(exc, default_delay_seconds=30.0)
 
@@ -88,7 +88,7 @@ def test_decide_retry_retries_a_tts_provider_error_with_a_5xx_status_code() -> N
 
 
 def test_decide_retry_treats_tts_provider_error_without_status_code_as_retryable() -> None:
-    exc = TtsProviderError(provider="qwen3-tts", message="unknown failure")
+    exc = TtsProviderError(provider="openai-speech", message="unknown failure")
 
     result = decide_retry(exc, default_delay_seconds=30.0)
 

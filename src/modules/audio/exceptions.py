@@ -8,7 +8,7 @@ TTS_PROVIDER_ERROR_CODE = "TTS_PROVIDER_ERROR"
 
 class TtsProviderError(AppError):
     """
-    Raised when a TTS provider's voices/synthesize API call fails.
+    Raised when a TTS provider's speech API call fails.
 
     Carries `status_code` (when known) so `src.modules.audio.retry.decide_retry` can
     classify the failure the same way it classifies an `httpx.HTTPStatusError`.

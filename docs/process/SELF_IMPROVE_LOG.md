@@ -25,3 +25,9 @@
 - Changed: no process-doc edit; one data point only.
 - Why: the manual check surfaced two facts no review would: the dev-only presign server still named uploads `.wav` (fixed to `.mp3`), and the gitignored local `.env` had a stale `GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS` (missing `presign-server`), which made the in-container callbacks fail until aligned with `.env.example`. MP3 via libsndfile 1.2.2 worked, so the REQUIREMENTS caveat did not apply.
 - Not committed: awaiting the user's review.
+
+## OpenAI-compatible TTS - step 5 (2026-10-14)
+
+- Changed: no process-doc edit.
+- Why: earlier steps had already removed most provider wording as they went (schema descriptions in 3, `.env.example`/README table in 1), so the cleanup reduced to a README paragraph plus two stale strings (an exception docstring, test fixtures naming `qwen3-tts`). Running the AC grep before editing showed that, and kept the step small.
+- Not committed: awaiting the user's review. This is the last step: `REQUIREMENTS.md` and this log are to be archived and removed per AGENTS.md.

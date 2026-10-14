@@ -81,6 +81,8 @@ All configuration is via environment variables (see [`.env.example`](../.env.exa
 | `GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS` | Comma-separated allow-listed hosts for outbound `genUploadUrl`/`statusCallbackUrl` calls |
 | `RABBITMQ__CONNECTION_STRING`             | AMQP connection string for the `generateAudio` job queue                                 |
 
+`TTS__*` targets any server implementing OpenAI's `POST {base_url}/audio/speech`: OpenAI (`https://api.openai.com/v1`), OpenRouter (`https://openrouter.ai/api/v1`, which also serves Qwen3-TTS and Gemini-TTS), or the local Qwen3-TTS shim in `compose.yml` (`http://qwen-tts:8001/v1`). Switching is a config change.
+
 ## References
 
 - https://dev.to/kasir-barati/does-pydantic-ais-structured-output-api-actually-work-against-ollamas-openai-compatible-endpoint-44aa
