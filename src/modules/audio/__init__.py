@@ -12,7 +12,6 @@ from src.modules.audio.types import (
     GenerateAudioJob,
     SynthesizedAudio,
     SynthesizeErrorCode,
-    Voice,
 )
 from src.modules.audio.worker import run_worker
 
@@ -27,7 +26,6 @@ __all__ = [
     "SynthesizedAudio",
     "TtsProvider",
     "TtsProviderError",
-    "Voice",
     "build_provider",
     "generate_audio",
     "resolve_audio_voices",

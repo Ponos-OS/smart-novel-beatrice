@@ -187,9 +187,6 @@ class _FakeProvider:
         self.synthesize_calls: list[dict[str, Any]] = []
         self.closed = False
 
-    async def get_voices(self, *, language: str | None = None):  # pragma: no cover - unused here
-        raise NotImplementedError
-
     async def synthesize(
         self, *, text: str, voice: str, instruct: str | None = None
     ) -> SynthesizedAudio:

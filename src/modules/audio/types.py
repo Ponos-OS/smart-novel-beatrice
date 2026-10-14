@@ -10,20 +10,6 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class Voice(BaseModel):
-    name: str = Field(
-        description="Provider-specific voice identifier to pass back into `synthesize`."
-    )
-    language_codes: list[str] = Field(
-        default_factory=list,
-        description=(
-            'BCP-47 language tags this voice supports (e.g. "en-US"). Only populated for '
-            "Gemini-TTS — Qwen3-TTS's third-party inference APIs report no per-voice language "
-            "metadata, so this is always empty there."
-        ),
-    )
-
-
 class SynthesizedAudio(BaseModel):
     """
     Result of a `synthesize` call. `file_path` is a local file — this abstraction never
