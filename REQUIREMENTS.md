@@ -86,7 +86,8 @@ Rewrite `local-setup/qwen-tts/server.py` to expose `POST /v1/audio/speech` (`mod
 AC:
 
 - `docker compose up --build -d` then a `generateAudio` against the local stack produces an MP3 uploaded through the presign server.
-- Unknown voice returns 4xx.
+- Unknown voice returns 4xx. A `response_format` other than `mp3` also returns 4xx.
+- Verified: the image's libsndfile (1.2.2) writes MP3 natively, so no extra encoder is needed.
 
 Test: manual (no pytest tier; dev-only infra). Verify `response_format=mp3` actually works in the shim's environment: libsndfile's MP3 write support is version-dependent, and if it is missing, encode via another route or document the format limit here. Use `run_in_background` for the cold compose build. Skip graphql-api-tester.
 

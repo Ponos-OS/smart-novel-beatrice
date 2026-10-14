@@ -39,6 +39,6 @@ def health() -> dict[str, bool]:
 
 @app.post("/presign")
 def presign() -> dict[str, str]:
-    object_name = f"{uuid.uuid4()}.wav"
+    object_name = f"{uuid.uuid4()}.mp3"
     url = client.presigned_put_object(MINIO_BUCKET, object_name, expires=timedelta(minutes=10))
     return {"url": url}

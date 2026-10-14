@@ -19,3 +19,9 @@
 - Why: the `wire-contract-coverage` pre-commit hook fired on step 2 for a `types.py` edit that only removed an unused model (no wire change) and also failed `make schema`'s embedded `pre-commit run`; used the hook's documented `SKIP=wire-contract-coverage` for that commit. If it recurs on another non-wire edit, add a note to PROCESS.md.
 - `tests/conftest.py` fixtures needed no changes beyond docstrings; the integration stubs shrank (one `POST /audio/speech` stub replaces the two-hop DashScope flow).
 - Not committed: awaiting the user's review.
+
+## OpenAI-compatible TTS - step 4 (2026-10-14)
+
+- Changed: no process-doc edit; one data point only.
+- Why: the manual check surfaced two facts no review would: the dev-only presign server still named uploads `.wav` (fixed to `.mp3`), and the gitignored local `.env` had a stale `GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS` (missing `presign-server`), which made the in-container callbacks fail until aligned with `.env.example`. MP3 via libsndfile 1.2.2 worked, so the REQUIREMENTS caveat did not apply.
+- Not committed: awaiting the user's review.
