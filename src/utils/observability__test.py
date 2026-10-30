@@ -5,6 +5,8 @@ import logging
 from collections.abc import Iterator
 
 import pytest
+from opentelemetry.sdk._logs import LoggingHandler  # noqa: PLC2701
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 
 from src.utils import (
@@ -14,6 +16,7 @@ from src.utils import (
     Logging,
     LoggingMode,
     LogLevel,
+    LogShipping,
     Otel,
     Settings,
     observability,
@@ -146,3 +149,39 @@ def test_tracing_installs_operation_filter_when_enabled(
         isinstance(span_processor, ExcludeGraphQLOperationsSpanProcessor)
         for span_processor in list(captured[0]._active_span_processor._span_processors)
     )
+
+
+def test_log_export_attaches_an_otel_logging_handler_to_the_root_logger() -> None:
+    settings = _make_settings(otel_enabled=True)
+
+    observability._configure_log_export(
+        settings, Resource.create({"service.name": "beatrice"})
+    )  # act
+
+    assert any(isinstance(h, LoggingHandler) for h in logging.getLogger().handlers)
+
+
+@pytest.mark.parametrize(
+    ("log_shipping", "expected_handlers"),
+    [("otlp", 1), ("stdout", 0)],
+)
+def test_tracing_pushes_logs_only_when_log_shipping_is_otlp(
+    monkeypatch: pytest.MonkeyPatch, log_shipping: LogShipping, expected_handlers: int
+) -> None:
+    monkeypatch.setattr(observability.trace, "set_tracer_provider", lambda provider: None)
+    fake_instrumentor = lambda: type("_FakeInstrumentor", (), {"instrument": lambda self: None})()  # noqa: E731
+    monkeypatch.setattr(observability, "HTTPXClientInstrumentor", fake_instrumentor)
+    monkeypatch.setattr(observability, "AioPikaInstrumentor", fake_instrumentor)
+    settings = Settings(
+        otel=Otel(
+            enabled=True,
+            log_shipping=log_shipping,
+            exporter_otlp_endpoint="http://otel-collector:4318",
+        ),
+        llm=Llm(base_url="http://ollama:11434/v1", api_key="ollama", model="qwen2.5:3b"),
+    )
+
+    observability._configure_tracing(settings, version="0.0.0")  # act
+
+    handlers = [h for h in logging.getLogger().handlers if isinstance(h, LoggingHandler)]
+    assert len(handlers) == expected_handlers

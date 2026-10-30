@@ -10,6 +10,7 @@ import tomllib
 from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -153,10 +154,14 @@ class RabbitMq(BaseSettings):
     )
 
 
+LogShipping = Literal["otlp", "stdout"]
+
+
 class Otel(BaseSettings):
     """OpenTelemetry configuration"""
 
     enabled: bool = Field()
+    log_shipping: LogShipping = Field(default="otlp")
     exporter_otlp_endpoint: str = Field()
     traces_sampler: str = Field(default="parentbased_always_on")
 

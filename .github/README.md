@@ -63,23 +63,24 @@ docker compose up --build -d
 
 All configuration is via environment variables (see [`.env.example`](../.env.example)). Notable ones:
 
-| Var                                       | Purpose                                                                                  |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `LLM__BASE_URL`                           | OpenAI-compatible endpoint (e.g. `https://api.openai.com/v1`, `http://ollama:11434/v1`)  |
-| `LLM__MODEL`                              | Model name to request                                                                    |
-| `LLM__API_KEY`                            | API key — any non-empty string for Ollama; real key for OpenAI/Together/etc.             |
-| `LLM__TIMEOUT_MS`                         | HTTP timeout for LLM calls (default `180000`)                                            |
-| `PORT`                                    | HTTP port (default `3000`)                                                               |
-| `LOGGING__MODE`                           | `JSON` or `PLAIN_TEXT`                                                                   |
-| `OTEL__ENABLED`                           | Set to `false` to disable OpenTelemetry export                                           |
-| `OTEL__EXPORTER_OTLP_ENDPOINT`            | OTLP HTTP endpoint (e.g. `http://otel-collector:4318`)                                   |
-| `TTS__BASE_URL`                           | OpenAI-compatible speech endpoint (e.g. `https://api.openai.com/v1`)                     |
-| `TTS__API_KEY`                            | Bearer token for the speech endpoint                                                     |
-| `TTS__MODEL`                              | Model name sent in every speech request                                                  |
-| `TTS__VOICES`                             | Comma-separated voice names `audioVoices` returns                                        |
-| `TTS__TIMEOUT_MS`                         | HTTP timeout for TTS calls (default `30000`)                                             |
-| `GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS` | Comma-separated allow-listed hosts for outbound `genUploadUrl`/`statusCallbackUrl` calls |
-| `RABBITMQ__CONNECTION_STRING`             | AMQP connection string for the `generateAudio` job queue                                 |
+| Var                                       | Purpose                                                                                          |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `LLM__BASE_URL`                           | OpenAI-compatible endpoint (e.g. `https://api.openai.com/v1`, `http://ollama:11434/v1`)          |
+| `LLM__MODEL`                              | Model name to request                                                                            |
+| `LLM__API_KEY`                            | API key — any non-empty string for Ollama; real key for OpenAI/Together/etc.                     |
+| `LLM__TIMEOUT_MS`                         | HTTP timeout for LLM calls (default `180000`)                                                    |
+| `PORT`                                    | HTTP port (default `3000`)                                                                       |
+| `LOGGING__MODE`                           | `JSON` or `PLAIN_TEXT`                                                                           |
+| `OTEL__ENABLED`                           | Set to `false` to disable OpenTelemetry export                                                   |
+| `OTEL__EXPORTER_OTLP_ENDPOINT`            | OTLP HTTP endpoint (e.g. `http://otel-collector:4318`)                                           |
+| `OTEL__LOG_SHIPPING`                      | `otlp` (default) pushes logs to the collector, `stdout` leaves them to a shipper that tails them |
+| `TTS__BASE_URL`                           | OpenAI-compatible speech endpoint (e.g. `https://api.openai.com/v1`)                             |
+| `TTS__API_KEY`                            | Bearer token for the speech endpoint                                                             |
+| `TTS__MODEL`                              | Model name sent in every speech request                                                          |
+| `TTS__VOICES`                             | Comma-separated voice names `audioVoices` returns                                                |
+| `TTS__TIMEOUT_MS`                         | HTTP timeout for TTS calls (default `30000`)                                                     |
+| `GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS` | Comma-separated allow-listed hosts for outbound `genUploadUrl`/`statusCallbackUrl` calls         |
+| `RABBITMQ__CONNECTION_STRING`             | AMQP connection string for the `generateAudio` job queue                                         |
 
 `TTS__*` targets any server implementing OpenAI's `POST {base_url}/audio/speech`: OpenAI (`https://api.openai.com/v1`), OpenRouter (`https://openrouter.ai/api/v1`, which also serves Qwen3-TTS and Gemini-TTS), or the local Qwen3-TTS shim in `compose.yml` (`http://qwen-tts:8001/v1`). Switching is a config change.
 

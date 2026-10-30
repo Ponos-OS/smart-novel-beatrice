@@ -11,10 +11,13 @@ from datetime import UTC, datetime
 from typing import Any
 
 from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter  # noqa: PLC2701
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.aio_pika import AioPikaInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler  # noqa: PLC2701
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor  # noqa: PLC2701
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -101,6 +104,14 @@ def _configure_logging(settings: Settings) -> None:
         uv_logger.propagate = True
 
 
+def _configure_log_export(settings: Settings, resource: Resource) -> None:
+    provider = LoggerProvider(resource=resource)
+    exporter = OTLPLogExporter(endpoint=f"{settings.otel.exporter_otlp_endpoint}/v1/logs")
+    provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
+    # The handler stamps each record with the active trace/span id, so Loki lines link to Tempo traces.
+    logging.getLogger().addHandler(LoggingHandler(logger_provider=provider))
+
+
 def _configure_tracing(settings: Settings, version: str) -> None:
     resource = Resource.create(
         {
@@ -115,6 +126,8 @@ def _configure_tracing(settings: Settings, version: str) -> None:
     )
     provider.add_span_processor(span_processor)
     trace.set_tracer_provider(provider)
+    if settings.otel.log_shipping == "otlp":
+        _configure_log_export(settings, resource)
 
     # HTTPX must be instrumented BEFORE any AsyncClient is created (pydantic-ai creates one internally when the first agent is instantiated).
     HTTPXClientInstrumentor().instrument()
