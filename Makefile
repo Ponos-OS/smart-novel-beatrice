@@ -163,7 +163,6 @@ lint_check: format_check
 	uv run flake8
 	uv run ty check
 	uv run lint-imports
-	uv run python local-setup/scripts/check_private_imports.py
 	uv run python local-setup/scripts/check_wire_contract_test_coverage.py $(WIRE_CONTRACT_BASE)
 	uv run jscpd
 
@@ -172,7 +171,6 @@ lint: format
 	uv run flake8
 	uv run ty check
 	uv run lint-imports
-	uv run python local-setup/scripts/check_private_imports.py
 	uv run jscpd
 
 ## Remove build artefacts, caches, .venv, __pycache__

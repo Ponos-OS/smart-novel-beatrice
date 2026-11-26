@@ -1,0 +1,32 @@
+id: no-private-import
+language: python
+severity: error
+message: Do not import private names
+rule:
+  kind: identifier
+  regex: ^_
+  not:
+    regex: ^__.*__$
+  any:
+    # `import x as _name`; `from x import y as _name` stays allowed.
+    - inside:
+        field: alias
+        kind: aliased_import
+        inside:
+          kind: import_statement
+    # Last segment of the imported name: `from x import _name`, `import x._name`.
+    - nthChild:
+        position: 1
+        reverse: true
+      inside:
+        kind: dotted_name
+        # `field: name` would only match the first of several imported names.
+        not:
+          inside:
+            field: module_name
+            kind: import_from_statement
+        inside:
+          any:
+            - kind: import_statement
+            - kind: import_from_statement
+            - kind: aliased_import
