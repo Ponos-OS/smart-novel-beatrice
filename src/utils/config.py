@@ -105,8 +105,8 @@ class CallbackSettings(BaseSettings):
         default="",
         description=(
             "Comma-separated allow-listed hosts for outbound genUploadUrl/statusCallbackUrl "
-            "calls. Beatrice makes an HTTP call to a URL it didn't choose, so any host not "
-            "listed here is rejected."
+            + "calls. Beatrice makes an HTTP call to a URL it didn't choose, so any host not "
+            + "listed here is rejected."
         ),
     )
 
@@ -148,8 +148,8 @@ class RabbitMq(BaseSettings):
         default=True,
         description=(
             "Whether this process also consumes `generateAudio` jobs, alongside serving "
-            "the GraphQL API, via a background task started in the FastAPI lifespan. "
-            "Disabled in tests that need to publish a job and inspect the queue directly."
+            + "the GraphQL API, via a background task started in the FastAPI lifespan. "
+            + "Disabled in tests that need to publish a job and inspect the queue directly."
         ),
     )
 
@@ -186,7 +186,7 @@ class Settings(BaseSettings):
         default_factory=socket.gethostname,
         description=(
             "Identifies this replica in logs (Beatrice runs replicated). Override via "
-            "INSTANCE_ID — e.g. the pod name in Kubernetes — when the hostname isn't useful."
+            + "INSTANCE_ID — e.g. the pod name in Kubernetes — when the hostname isn't useful."
         ),
     )
 
@@ -199,17 +199,14 @@ class Settings(BaseSettings):
 
         return data["project"]["name"]
 
-    # pyright can't see that these are populated from LLM__*/
-    # RABBITMQ__*/OTEL__*/TTS__* env vars, not by literally calling Llm()/RabbitMq()/Otel()/
-    # Tts() with no arguments.
     logging: Logging = Field(default_factory=Logging)
-    llm: Llm = Field(default_factory=Llm)  # pyright: ignore[reportArgumentType]
+    llm: Llm = Field(default_factory=Llm)
     explain_word: EndpointOverride = Field(default_factory=EndpointOverride)
     normalize_tts: NormalizeTtsOverride = Field(default_factory=NormalizeTtsOverride)
-    tts: Tts = Field(default_factory=Tts)  # pyright: ignore[reportArgumentType]
+    tts: Tts = Field(default_factory=Tts)
     generate_audio: GenerateAudio = Field(default_factory=GenerateAudio)
-    rabbitmq: RabbitMq = Field(default_factory=RabbitMq)  # pyright: ignore[reportArgumentType]
-    otel: Otel = Field(default_factory=Otel)  # pyright: ignore[reportArgumentType]
+    rabbitmq: RabbitMq = Field(default_factory=RabbitMq)
+    otel: Otel = Field(default_factory=Otel)
 
 
 @lru_cache(maxsize=1)

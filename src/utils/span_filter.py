@@ -11,25 +11,9 @@ from opentelemetry.context import Context
 from opentelemetry.sdk.trace import ReadableSpan, Span, SpanProcessor
 
 
-_EXCLUDE = {
-    "graphql_operations": frozenset(
-        {
-            "healthcheck",
-            "IntrospectionQuery",
-        }
-    ),
-    "non_graphql_span_names": frozenset(
-        {
-            "GET /graphql",
-            "HEAD /graphql",
-            "OPTIONS /graphql",
-        }
-    ),
-    "graphql_asgi_child_span_suffixes": (
-        " /graphql http receive",
-        " /graphql http send",
-    ),
-}
+_EXCLUDED_GRAPHQL_OPERATIONS = frozenset({"healthcheck", "IntrospectionQuery"})
+_EXCLUDED_NON_GRAPHQL_SPAN_NAMES = frozenset({"GET /graphql", "HEAD /graphql", "OPTIONS /graphql"})
+_EXCLUDED_GRAPHQL_ASGI_CHILD_SPAN_SUFFIXES = (" /graphql http receive", " /graphql http send")
 
 
 class ExcludeGraphQLOperationsSpanProcessor(SpanProcessor):
@@ -44,15 +28,15 @@ class ExcludeGraphQLOperationsSpanProcessor(SpanProcessor):
         self._inner.on_start(span, parent_context)
 
     def on_end(self, span: ReadableSpan) -> None:
-        if span.name in _EXCLUDE["non_graphql_span_names"]:
+        if span.name in _EXCLUDED_NON_GRAPHQL_SPAN_NAMES:
             return
 
-        if span.name.endswith(_EXCLUDE["graphql_asgi_child_span_suffixes"]):
+        if span.name.endswith(_EXCLUDED_GRAPHQL_ASGI_CHILD_SPAN_SUFFIXES):
             return
 
         attributes = span.attributes or {}
         operation_name = attributes.get("graphql.operation.name")
-        if isinstance(operation_name, str) and operation_name in _EXCLUDE["graphql_operations"]:
+        if isinstance(operation_name, str) and operation_name in _EXCLUDED_GRAPHQL_OPERATIONS:
             return
 
         self._inner.on_end(span)

@@ -27,14 +27,14 @@ class Query:
         resolver=resolve_audio_voices,
         description=(
             "Voice names available for TTS synthesis, from the TTS__VOICES setting. "
-            "English text only for now — this limitation will be addressed later."
+            + "English text only for now — this limitation will be addressed later."
         ),
     )
 
 
 @strawberry.type
 class Mutation:
-    explain_word: WordExplanationType = strawberry.mutation(
+    explain_word: WordExplanationType = strawberry.mutation(  # ty: ignore[invalid-type-form]
         resolver=explain_word,
         description=(
             "Return a structured explanation of a word as it is used in the given context."
@@ -53,8 +53,8 @@ class Mutation:
         resolver=generate_audio,
         description=(
             "Queue a TTS synthesis job. Publishes to RabbitMQ and returns immediately "
-            "(HTTP 202) with a jobId — actual synthesis and upload happen asynchronously; "
-            "progress and completion are reported via statusCallbackUrl."
+            + "(HTTP 202) with a jobId — actual synthesis and upload happen asynchronously; "
+            + "progress and completion are reported via statusCallbackUrl."
         ),
     )
 

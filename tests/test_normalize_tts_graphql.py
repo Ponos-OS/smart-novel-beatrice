@@ -148,7 +148,7 @@ def _assert_token_usage_attributes(token_spans: list[dict]) -> None:
 
     print(
         f"\n--- token totals across {len(token_spans)} model requests: "
-        f"input={total_input}, output={total_output} ---"
+        + f"input={total_input}, output={total_output} ---"
     )
 
 

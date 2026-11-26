@@ -1,5 +1,3 @@
-# pyright: reportOptionalSubscript=false, reportOptionalMemberAccess=false
-
 from __future__ import annotations
 
 from typing import Annotated
@@ -141,6 +139,7 @@ async def test_input_valid_data_is_accepted_and_trimmed() -> None:
     )
 
     assert result.errors is None
+    assert result.data is not None
     assert result.data["createUser"] == {
         "name": "Ada Lovelace",
         "email": "ada@example.com",
@@ -287,9 +286,9 @@ class _NestedMutation:
 
         return (
             f"{text}"
-            f"|protagonist={context.protagonist.canonical_name}"
-            f"|pronouns={context.protagonist.pronouns}"
-            f"|chars={[c.canonical_name for c in context.characters]}"
+            + f"|protagonist={context.protagonist.canonical_name}"
+            + f"|pronouns={context.protagonist.pronouns}"
+            + f"|chars={[c.canonical_name for c in context.characters]}"
         )
 
 
@@ -365,6 +364,7 @@ async def test_nested_input_field_is_trimmed() -> None:
     )
 
     assert result.errors is None
+    assert result.data is not None
     data = result.data["normalize"]
     assert "protagonist=Alice" in data
     assert "pronouns=she/her" in data
@@ -410,6 +410,7 @@ async def test_nested_input_inside_list_is_trimmed() -> None:
     )
 
     assert result.errors is None
+    assert result.data is not None
     assert "chars=['Bob']" in result.data["normalize"]
 
 
@@ -427,6 +428,7 @@ async def test_nested_input_valid_data_still_reaches_resolver_today() -> None:
     )
 
     assert result.errors is None
+    assert result.data is not None
     data = result.data["normalize"]
     assert "protagonist=Alice" in data
     assert "chars=['Bob']" in data

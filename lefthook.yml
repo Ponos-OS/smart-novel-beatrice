@@ -1,0 +1,38 @@
+# Install with `make init` (runs `npx lefthook install`).
+
+pre-commit:
+  # `make lint` applies fixes: stop the commit so they can be reviewed and staged.
+  fail_on_changes: always
+  jobs:
+    - name: protected branch
+      run: uv run no-commit-to-branch --branch master --branch devtest-development
+    - name: strip notebook outputs
+      glob: "*.ipynb"
+      run: uv run nbstripout {staged_files}
+    - name: lint
+      run: make lint
+    - name: graphql schema
+      glob:
+        - "src/schema.py"
+        - "src/modules/*/resolver.py"
+        - "src/modules/*/types.py"
+      run: make schema
+    - name: wire-contract-coverage
+      run: uv run python local-setup/scripts/check_wire_contract_test_coverage.py
+
+pre-push:
+  fail_on_changes: always
+  jobs:
+    - name: protected branch
+      run: uv run no-commit-to-branch --branch master --branch devtest-development
+    - name: lint
+      run: make lint
+    - name: unit tests
+      run: make test
+    - name: integration tests
+      run: make integration_test
+
+commit-msg:
+  jobs:
+    - name: conventional commit message
+      run: uv run conventional-pre-commit {1}

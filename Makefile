@@ -3,7 +3,7 @@ SHELL         := /bin/bash
 .DEFAULT_GOAL := help
 
 .ONESHELL:
-.PHONY: help init start_dev test integration_test evals evals_baseline _run_evals schema lint_check lint clean
+.PHONY: help init start_dev start test integration_test evals evals_baseline _run_evals schema format format_check lint_check lint clean
 
 # ---- Configurable knobs -----------------------------------------------------
 PORT      ?= 3000
@@ -13,6 +13,16 @@ TAG       ?= dev
 # CI passes the previous commit SHA to diff the whole push instead.
 WIRE_CONTRACT_BASE ?=
 
+# CI-generated API docs sites; never reformatted.
+GENERATED := ':(exclude)docs/v*' ':(exclude)docs/latest'
+# Tracked and new text files, NUL separated.
+GREP_TEXT := git grep --untracked -Ilz -e '' --
+TEXT_FILES = $(GREP_TEXT) $(GENERATED)
+YAML_FILES = $(GREP_TEXT) '*.yml' '*.yaml' $(GENERATED)
+TOML_FILES = $(GREP_TEXT) '*.toml'
+# The fixers matter for everything else, such as Markdown, YAML, JSON, the Makefile and the Dockerfile.
+WHITESPACE_FIXERS := end-of-file-fixer trailing-whitespace-fixer
+
 
 ## Show this help message
 help:
@@ -21,13 +31,14 @@ help:
 	@awk '/^## /{desc = substr($$0, 4)} /^[a-zA-Z_-]+:/{if (desc) {target = $$1; sub(/:.*/, "", target); printf "  make %-20s- %s\n", target, desc; desc = ""}}' $(MAKEFILE_LIST)
 	@echo ""
 
-## Initialize project (install deps, setup pre-commit, create .env)
+## Initialize project
 init:
 	@which uv > /dev/null || (echo "Error: uv is not installed. Please install uv: https://docs.astral.sh/uv/getting-started/installation/" && exit 1)
 	uv venv .venv
 	uv sync
 	cp --update=none .env.example .env || true
-	uv run pre-commit install
+	npm install
+	npx --no-install lefthook install
 
 ## Starts the app with auto-reload
 start_dev:
@@ -114,27 +125,57 @@ schema:
 	mkdir -p docs
 	uv run strawberry export-schema src.schema:schema > docs/schema.graphql
 	@echo "== wrote docs/schema.graphql ($$(wc -l < docs/schema.graphql) lines) =="
-	uv run pre-commit run --files docs/schema.graphql
+	for fixer in $(WHITESPACE_FIXERS); do
+		uv run $$fixer docs/schema.graphql || uv run $$fixer docs/schema.graphql
+	done
 
-## Runs linters
-lint_check:
+## Format the code
+format:
+	$(YAML_FILES) | xargs -0 uv run check-yaml
+	$(TOML_FILES) | xargs -0 uv run check-toml
+	# A fixer exits 1 after changing a file, so only a second failure is an error.
+	for fixer in $(WHITESPACE_FIXERS); do
+		$(TEXT_FILES) | xargs -0 uv run $$fixer || $(TEXT_FILES) | xargs -0 uv run $$fixer
+	done
+	uv run taplo format
+	uv run ruff check --fix .
+	npx --no-install ast-grep scan -U src tests
+	uv run ruff format .
+
+## Check formatting
+format_check:
+	$(YAML_FILES) | xargs -0 uv run check-yaml
+	$(TOML_FILES) | xargs -0 uv run check-toml
+	# The fixers have no check mode, so they run on a throwaway copy.
+	copy="$$(mktemp -d)"
+	trap 'rm -rf "$$copy"' EXIT
+	$(TEXT_FILES) | tar --null -T - -cf - | tar -xf - -C "$$copy"
+	for fixer in $(WHITESPACE_FIXERS); do
+		$(TEXT_FILES) | (cd "$$copy" && xargs -0 uv run --project "$(CURDIR)" $$fixer)
+	done
+	uv run taplo format --check
 	uv run ruff format --check .
+	npx --no-install ast-grep scan src tests
+
+## Check linters
+lint_check: format_check
 	uv run ruff check .
-	uv run flake8 .
+	uv run flake8
+	uv run ty check
+	uv run lint-imports
 	uv run python local-setup/scripts/check_private_imports.py
 	uv run python local-setup/scripts/check_wire_contract_test_coverage.py $(WIRE_CONTRACT_BASE)
 	uv run jscpd
 
-## Apply linter
-lint:
-	uv run ruff format .
-	uv run pyright src
-	uv run ruff check --fix .
-	uv run flake8 .
+## Apply linters
+lint: format
+	uv run flake8
+	uv run ty check
+	uv run lint-imports
 	uv run python local-setup/scripts/check_private_imports.py
 	uv run jscpd
 
 ## Remove build artefacts, caches, .venv, __pycache__
 clean:
-	rm -rf .venv build dist htmlcov .pytest_cache .ruff_cache .pyright .coverage .coverage.* coverage.xml *.egg-info
+	rm -rf .venv build dist htmlcov .pytest_cache .ruff_cache .import_linter_cache .coverage .coverage.* coverage.xml *.egg-info
 	find . -type d -name __pycache__ -prune -exec rm -rf {} +

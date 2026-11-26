@@ -6,6 +6,7 @@ Thanks for helping out. This document covers the project layout and the testing 
 
 - [Docker](https://www.docker.com/).
 - [`uv`](https://docs.astral.sh/uv/).
+- [Node.js](https://nodejs.org/) (ast-grep and lefthook).
 
 ```shell
 make init
@@ -42,6 +43,8 @@ smart-novel-beatrice/
 │   ├── conftest.py                   # Session fixtures
 │   └── test_*_graphql.py             # One file per GraphQL operation
 ├── local-setup/                      # Development-only infra support (container setup, scripts, telemetry config)
+├── ast-grep/rules/                   # Custom lint rules, configured by sgconfig.yml
+├── lefthook.yml                      # Git hooks
 ├── compose.yml
 ├── Dockerfile
 ├── Makefile
@@ -112,3 +115,4 @@ Prompts live at `src/modules/<module>/prompts/v1.jinja2`. The question that deci
 8. An enum/type that a module needs _and_ that `Settings` needs to reference (e.g. to pick which of that module's implementations to use) belongs in `src/utils/config.py`, colocated with the other settings enums (`LoggingMode`, `LogLevel`), not in the module itself. `Settings` is imported nearly everywhere, so defining that type in the module instead creates a straight import cycle the moment `Settings` needs it too.
 9. Comma-separated / delimited env var on a `BaseSettings` field → see the `settings-list-env-field` skill.
 10. Asserting on `extra={...}` log fields via `caplog` → see the `caplog-extra-typing` skill.
+11. Barrel imports are enforced by [`import-linter`](https://import-linter.readthedocs.io/): outside a package, import from its `__init__.py` (`from src.utils import Settings`), never from a submodule. A new barrel package needs its own `protected` contract in `pyproject.toml`.

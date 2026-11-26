@@ -33,11 +33,15 @@ dev = [
     "httpx>=0.27",
     "testcontainers>=4.8",
     "boto3>=1.35",
-    "ruff==0.15.20",
-    "pyright>=1.1.389",
+    "ruff>=0.17.6",
+    "ty>=0.0.109",
+    "taplo>=0.9.3",
+    "import-linter>=2.17",
+    "conventional-pre-commit>=4.5.0",
+    "pre-commit-hooks>=6.0.0",
+    "nbstripout>=0.9.1",
     "pydantic-evals>=0.0.14",
     "pyyaml>=6.0",
-    "pre-commit>=4.0",
     "flake8-aaa>=0.17.2",
     "ipykernel>=7.3.0",
     "pip>=26.2.1",
@@ -65,19 +69,22 @@ extend-exclude = [".venv", "dist", "build"]
 preview = true
 explicit-preview-rules = true
 select = [
-    "E", "W",   # pycodestyle
-    "F",        # pyflakes
-    "I",        # isort
-    "B",        # flake8-bugbear
-    "UP",       # pyupgrade
-    "C4",       # comprehensions
-    "SIM",      # simplify
-    "N",        # naming
-    "RUF",      # ruff-specific
-    "PLC2701",  # import-private-name (preview)
+    "E",
+    "W",       # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "B",       # flake8-bugbear
+    "UP",      # pyupgrade
+    "C4",      # comprehensions
+    "SIM",     # simplify
+    "N",       # naming
+    "RUF",     # ruff-specific
+    "ISC001",  # implicitly concatenated strings on one line
+    "ISC002",  # implicitly concatenated strings over a backslash continuation
+    "PLC2701", # import-private-name (preview)
 ]
 ignore = [
-    "E501",     # line-length handled by formatter
+    "E501", # line-length handled by formatter
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -94,13 +101,62 @@ quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
 
-[tool.pyright]
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.src]
 include = ["src", "tests"]
-exclude = ["**/__pycache__", ".venv", "dist", "build"]
-pythonVersion = "3.12"
-typeCheckingMode = "standard"
-reportMissingImports = "error"
-reportMissingTypeStubs = "none"
+
+# ---------------------------------------------------------------------------
+# Import linter
+# ---------------------------------------------------------------------------
+# A package with a barrel `__init__.py` is "protected": outside it, import from the barrel, never a
+# submodule. A new barrel package needs its own contract.
+[tool.importlinter]
+root_packages = ["src", "tests"]
+
+[[tool.importlinter.contracts]]
+name = "src never imports tests"
+type = "forbidden"
+source_modules = ["src"]
+forbidden_modules = ["tests"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "src.utils internals are private"
+type = "protected"
+protected_modules = ["src.utils.**"]
+allowed_importers = ["src.utils", "src.utils.**"]
+
+[[tool.importlinter.contracts]]
+name = "src.modules.audio internals are private"
+type = "protected"
+protected_modules = ["src.modules.audio.**"]
+allowed_importers = ["src.modules.audio", "src.modules.audio.**"]
+
+[[tool.importlinter.contracts]]
+name = "src.modules.explain_word internals are private"
+type = "protected"
+protected_modules = ["src.modules.explain_word.**"]
+allowed_importers = ["src.modules.explain_word", "src.modules.explain_word.**"]
+
+[[tool.importlinter.contracts]]
+name = "src.modules.healthcheck internals are private"
+type = "protected"
+protected_modules = ["src.modules.healthcheck.**"]
+allowed_importers = ["src.modules.healthcheck", "src.modules.healthcheck.**"]
+
+[[tool.importlinter.contracts]]
+name = "src.modules.normalize_tts internals are private"
+type = "protected"
+protected_modules = ["src.modules.normalize_tts.**"]
+allowed_importers = ["src.modules.normalize_tts", "src.modules.normalize_tts.**"]
+
+[[tool.importlinter.contracts]]
+name = "tests.fixtures internals are private"
+type = "protected"
+protected_modules = ["tests.fixtures.**"]
+allowed_importers = ["tests.fixtures", "tests.fixtures.**"]
 
 # ---------------------------------------------------------------------------
 # Pytest
@@ -114,12 +170,10 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
-    "--capture=tee-sys",  # Capture stdout/stderr terminal in realtime.
+    "--capture=tee-sys", # Capture stdout/stderr terminal in realtime.
 ]
 asyncio_mode = "auto"
-markers = [
-    "integration: end-to-end tests that hit real services (Testcontainers, live HTTP).",
-]
+markers = ["integration: end-to-end tests that hit real services (Testcontainers, live HTTP)."]
 
 [tool.coverage.run]
 source = ["src"]
@@ -129,8 +183,4 @@ omit = ["**/*__test.py"]
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
-exclude_also = [
-    "if TYPE_CHECKING:",
-    "raise NotImplementedError",
-    "\\.\\.\\.",
-]
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "\\.\\.\\."]

@@ -10,5 +10,5 @@ def __init__(self, ..., transport: httpx.AsyncBaseTransport | None = None) -> No
     self._client = httpx.AsyncClient(..., transport=transport)
 ```
 
-- Type it `httpx.AsyncBaseTransport`, not `httpx.BaseTransport` — pyright rejects the sync variant against `AsyncClient`.
+- Type it `httpx.AsyncBaseTransport`, not `httpx.BaseTransport` — ty rejects the sync variant against `AsyncClient`.
 - This lets tests inject `httpx.MockTransport` directly instead of patching the client or its methods.

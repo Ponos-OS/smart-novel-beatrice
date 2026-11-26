@@ -79,6 +79,15 @@ jobs:
       - name: Install Python deps
         run: uv sync
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Node tooling
+        run: npm ci
+
       - name: Lint
         env:
           DIFF_BASE_SHA: ${{ github.event.before }}

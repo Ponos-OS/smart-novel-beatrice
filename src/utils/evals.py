@@ -161,8 +161,8 @@ class EvalRunner[InputsT, OutputT, MetadataT]:
                 print(f"  - {name}")
             print(
                 "This usually means the LLM call timed out, returned invalid JSON, "
-                "or the Ollama endpoint is unreachable. Refusing to compare against "
-                "baseline until every case runs to completion.",
+                + "or the Ollama endpoint is unreachable. Refusing to compare against "
+                + "baseline until every case runs to completion.",
             )
             return 1
 
@@ -203,7 +203,7 @@ class EvalRunner[InputsT, OutputT, MetadataT]:
                 print(f"  - {name}")
             print(
                 "Refusing to overwrite baseline with partial results. Fix the "
-                "underlying LLM/task failure first, then re-run --update-baseline.",
+                + "underlying LLM/task failure first, then re-run --update-baseline.",
             )
             return 1
 

@@ -64,14 +64,14 @@ async def generate_audio(
         strawberry.argument(
             description=(
                 "Callback Beatrice POSTs to exactly once, when it needs a presigned upload URL "
-                "for the synthesized audio. Sent with header `Idempotency-Key: <jobId>`, so a "
-                "retried call is recognized as the same request rather than minting a second "
-                'presigned URL. Must respond with JSON shaped `{"url": "<presigned-url>"}` — '
-                "Beatrice then PUTs the audio bytes directly to that URL with "
-                "`Content-Type: audio/mpeg`. Host must be in the "
-                "GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS allow-list. The callback receives a "
-                'JSON body `{"clientContextId": "<value>"}` when the caller supplied '
-                "`clientContextId`, and no body otherwise."
+                + "for the synthesized audio. Sent with header `Idempotency-Key: <jobId>`, so a "
+                + "retried call is recognized as the same request rather than minting a second "
+                + 'presigned URL. Must respond with JSON shaped `{"url": "<presigned-url>"}` — '
+                + "Beatrice then PUTs the audio bytes directly to that URL with "
+                + "`Content-Type: audio/mpeg`. Host must be in the "
+                + "GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS allow-list. The callback receives a "
+                + 'JSON body `{"clientContextId": "<value>"}` when the caller supplied '
+                + "`clientContextId`, and no body otherwise."
             ),
         ),
     ],
@@ -81,25 +81,25 @@ async def generate_audio(
         strawberry.argument(
             description=(
                 "Callback Beatrice POSTs progress/state updates to, exactly one call per "
-                "status, best-effort (a failed delivery is logged and never fails the job "
-                'or blocks retries). Every body includes `"jobId": "<jobId>"`, plus '
-                '`"clientContextId": "<value>"` when the caller supplied `clientContextId`. '
-                'Bodies, in order: `{"status": "queued", "progress": <int>, "jobId": '
-                '"<jobId>", "clientContextId": "<value>"}`; `{"status": "generating", '
-                '"progress": <int>, "jobId": "<jobId>", "clientContextId": "<value>"}`; '
-                '`{"status": "uploading", "progress": <int>, "jobId": "<jobId>", '
-                '"clientContextId": "<value>"}`; then either `{"status": "completed", '
-                '"fileSizeBytes": <int>, "jobId": "<jobId>", "clientContextId": "<value>"}` '
-                'or `{"status": "failed", "failedAt": "<iso8601>", "error": {"code": '
-                '"TTS_PROVIDER_ERROR" | "UPLOAD_ERROR", "message": "<str>"}, "jobId": '
-                '"<jobId>", "clientContextId": "<value>"}`. `progress` is present with an '
-                "integer value on `queued`/`generating`/`uploading` and absent on "
-                '`"completed"`/`"failed"`. It means only "a bigger number is later for this '
-                "job\" — no meaning is attached to specific values, and they aren't "
-                "guaranteed to stay stable across a Beatrice release. `clientContextId` is "
-                "omitted entirely when the caller didn't supply one. No response body is "
-                "expected. Host must be in the GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS "
-                "allow-list."
+                + "status, best-effort (a failed delivery is logged and never fails the job "
+                + 'or blocks retries). Every body includes `"jobId": "<jobId>"`, plus '
+                + '`"clientContextId": "<value>"` when the caller supplied `clientContextId`. '
+                + 'Bodies, in order: `{"status": "queued", "progress": <int>, "jobId": '
+                + '"<jobId>", "clientContextId": "<value>"}`; `{"status": "generating", '
+                + '"progress": <int>, "jobId": "<jobId>", "clientContextId": "<value>"}`; '
+                + '`{"status": "uploading", "progress": <int>, "jobId": "<jobId>", '
+                + '"clientContextId": "<value>"}`; then either `{"status": "completed", '
+                + '"fileSizeBytes": <int>, "jobId": "<jobId>", "clientContextId": "<value>"}` '
+                + 'or `{"status": "failed", "failedAt": "<iso8601>", "error": {"code": '
+                + '"TTS_PROVIDER_ERROR" | "UPLOAD_ERROR", "message": "<str>"}, "jobId": '
+                + '"<jobId>", "clientContextId": "<value>"}`. `progress` is present with an '
+                + "integer value on `queued`/`generating`/`uploading` and absent on "
+                + '`"completed"`/`"failed"`. It means only "a bigger number is later for this '
+                + "job\" — no meaning is attached to specific values, and they aren't "
+                + "guaranteed to stay stable across a Beatrice release. `clientContextId` is "
+                + "omitted entirely when the caller didn't supply one. No response body is "
+                + "expected. Host must be in the GENERATE_AUDIO__CALLBACK__ALLOWED_HOSTS "
+                + "allow-list."
             ),
         ),
     ],
@@ -109,11 +109,11 @@ async def generate_audio(
         strawberry.argument(
             description=(
                 "A style guide applied to the whole call, e.g. 'A male narrator with a "
-                "clear voice. Treat bracketed words like [dramatic] as emotion cues, not "
-                "literal text.' Sent to the TTS endpoint as `instructions`; whether it is "
-                "honored depends on the configured model. text is never parsed or stripped "
-                "by Beatrice — any inline tags in it are passed through verbatim for the "
-                "model to interpret per this guide."
+                + "clear voice. Treat bracketed words like [dramatic] as emotion cues, not "
+                + "literal text.' Sent to the TTS endpoint as `instructions`; whether it is "
+                + "honored depends on the configured model. text is never parsed or stripped "
+                + "by Beatrice — any inline tags in it are passed through verbatim for the "
+                + "model to interpret per this guide."
             ),
         ),
     ] = None,
@@ -122,10 +122,10 @@ async def generate_audio(
         strawberry.argument(
             description=(
                 "Opaque caller-supplied value. Beatrice never interprets or validates it — "
-                "it's stored alongside the job and echoed back verbatim, as "
-                "`clientContextId`, in every `statusCallbackUrl` body and in the "
-                "`genUploadUrl` POST. Useful for correlating callbacks that may arrive "
-                "before the mutation response does."
+                + "it's stored alongside the job and echoed back verbatim, as "
+                + "`clientContextId`, in every `statusCallbackUrl` body and in the "
+                + "`genUploadUrl` POST. Useful for correlating callbacks that may arrive "
+                + "before the mutation response does."
             ),
         ),
     ] = None,

@@ -39,7 +39,11 @@ class _FakeHttpxResponse:
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
-            raise httpx.HTTPStatusError("boom", request=None, response=None)  # type: ignore[arg-type]
+            raise httpx.HTTPStatusError(
+                "boom",
+                request=httpx.Request("POST", "https://client.example.com"),
+                response=httpx.Response(self.status_code),
+            )
 
     def json(self) -> dict[str, Any]:
         assert self._json_body is not None
@@ -674,7 +678,7 @@ async def test_handle_message_failure_log_contains_all_required_fields(
 def test_queue_wait_seconds_returns_none_when_timestamp_header_is_missing() -> None:
     message = _message()
 
-    result = worker_module._queue_wait_seconds(message)  # type: ignore[arg-type]
+    result = worker_module._queue_wait_seconds(message)  # ty: ignore[invalid-argument-type]
 
     assert result is None
 
@@ -682,7 +686,7 @@ def test_queue_wait_seconds_returns_none_when_timestamp_header_is_missing() -> N
 def test_queue_wait_seconds_returns_none_when_timestamp_header_is_unparseable() -> None:
     message = _message(headers={"timestamp": "not-a-date"})
 
-    result = worker_module._queue_wait_seconds(message)  # type: ignore[arg-type]
+    result = worker_module._queue_wait_seconds(message)  # ty: ignore[invalid-argument-type]
 
     assert result is None
 
@@ -691,7 +695,7 @@ def test_queue_wait_seconds_computes_elapsed_time_since_the_header() -> None:
     five_seconds_ago = (datetime.now(UTC) - timedelta(seconds=5)).isoformat()
     message = _message(headers={"timestamp": five_seconds_ago})
 
-    result = worker_module._queue_wait_seconds(message)  # type: ignore[arg-type]
+    result = worker_module._queue_wait_seconds(message)  # ty: ignore[invalid-argument-type]
 
     assert result is not None
     assert result >= 5

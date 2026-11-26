@@ -26,7 +26,11 @@ class _FakeHttpxResponse:
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
-            raise httpx.HTTPStatusError("boom", request=None, response=None)  # type: ignore[arg-type]
+            raise httpx.HTTPStatusError(
+                "boom",
+                request=httpx.Request("POST", "https://client.example.com"),
+                response=httpx.Response(self.status_code),
+            )
 
 
 class _FakeHttpxClient:

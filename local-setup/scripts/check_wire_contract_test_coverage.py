@@ -14,7 +14,7 @@ log line, or a comment tweak in the same file won't trip it. It's still a
 heuristic, not a structural diff: a body assembled in an unusual way (e.g. via
 `**kwargs` merge) could in theory slip through unflagged. When in doubt, prefer
 touching a `tests/` file over trusting the heuristic — or explicitly skip this
-check (`SKIP=wire-contract-coverage git commit ...` locally; pass the diff base
+check (`LEFTHOOK_EXCLUDE=wire-contract-coverage git commit ...` locally; pass the diff base
 as argv in CI) for a change you've confirmed is genuinely wire-shape-neutral.
 See REQUIREMENTS.md "Ordered TTS Status Callbacks" step 2's self-improve log
 entry for the incident this check exists to catch.
@@ -159,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
         "changed shape, update the matching tests/test_*_graphql.py assertions "
         "(see .github/CONTRIBUTING.md's Testing Philosophy, tier 2). If this "
         "heuristic is wrong for this change, skip it explicitly: "
-        "`SKIP=wire-contract-coverage git commit ...` locally, or pass the diff "
+        "`LEFTHOOK_EXCLUDE=wire-contract-coverage git commit ...` locally, or pass the diff "
         "base explicitly in CI — don't silently ignore it.",
         file=sys.stderr,
     )

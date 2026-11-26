@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from importlib.metadata import version
 
 import uvicorn
@@ -29,7 +29,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     setup_observability(settings, version=service_version)
 
     @contextlib.asynccontextmanager
-    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         worker_task: asyncio.Task[None] | None = None
         if settings.rabbitmq.worker_enabled:
             worker_task = asyncio.create_task(run_worker(settings))

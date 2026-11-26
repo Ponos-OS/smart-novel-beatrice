@@ -36,7 +36,7 @@ def wait_for_spans(
 
     raise TimeoutError(
         f"predicate not satisfied within {timeout_s}s; saw {len(spans)} span(s): "
-        f"{[s['name'] for s in spans]!r}"
+        + f"{[s['name'] for s in spans]!r}"
     )
 
 

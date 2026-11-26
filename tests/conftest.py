@@ -377,7 +377,7 @@ def s3_bucket(s3_container: DockerContainer, docker_network: Network) -> str:
     if exit_code != 0:
         raise RuntimeError(
             f"bucket setup failed (exit {exit_code}):\n{stdout.decode(errors='replace')}"
-            f"\n{stderr.decode(errors='replace')}"
+            + f"\n{stderr.decode(errors='replace')}"
         )
 
     return S3_TEST_BUCKET

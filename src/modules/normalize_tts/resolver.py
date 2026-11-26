@@ -28,8 +28,8 @@ async def normalize_text_for_tts(
         strawberry.argument(
             description=(
                 "Raw text to be normalised for TTS — numbers, acronyms, symbols, and dates "
-                "are rewritten into the form a speech engine can read aloud naturally. "
-                "Must be 1..4000 characters."
+                + "are rewritten into the form a speech engine can read aloud naturally. "
+                + "Must be 1..4000 characters."
             ),
             directives=[spectaql_example("Dr. Smith met with 3 clients at 9am on 12/03/2024.")],
         ),

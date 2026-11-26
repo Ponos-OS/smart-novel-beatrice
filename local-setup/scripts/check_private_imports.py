@@ -81,7 +81,7 @@ def _check_file(path: Path) -> list[Violation]:
     try:
         tree = ast.parse(source, filename=str(path))
     except SyntaxError:
-        # Let ruff/pyright complain about syntax; not this checker's job.
+        # Let ruff/ty complain about syntax; not this checker's job.
         return []
 
     for node in ast.walk(tree):

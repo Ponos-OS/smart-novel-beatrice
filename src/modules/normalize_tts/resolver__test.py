@@ -7,8 +7,7 @@ import pytest
 
 from src.modules.normalize_tts.resolver import normalize_text_for_tts
 from src.modules.normalize_tts.types import NormalizedText
-from src.utils import LlmError, get_settings
-from src.utils.exceptions import LLM_ERROR_CODE
+from src.utils import LLM_ERROR_CODE, LlmError, get_settings
 
 
 @pytest.fixture(autouse=True)

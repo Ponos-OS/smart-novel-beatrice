@@ -79,6 +79,6 @@ def test_word_explanation_type_exposes_the_same_fields_as_the_pydantic_model() -
 
     assert pydantic_fields == graphql_fields, (
         "WordExplanation and WordExplanationType fields have drifted. "
-        f"Only on WordExplanation: {sorted(pydantic_fields - graphql_fields)}. "
-        f"Only on WordExplanationType: {sorted(graphql_fields - pydantic_fields)}."
+        + f"Only on WordExplanation: {sorted(pydantic_fields - graphql_fields)}. "
+        + f"Only on WordExplanationType: {sorted(graphql_fields - pydantic_fields)}."
     )

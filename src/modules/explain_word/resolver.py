@@ -29,14 +29,14 @@ async def explain_word(
         strawberry.argument(
             description=(
                 "The sentence or paragraph the word appears in — used to disambiguate its "
-                "meaning. Must be 1..2000 characters."
+                + "meaning. Must be 1..2000 characters."
             ),
             directives=[
                 spectaql_example("She acted on impulse and booked a flight home the same night.")
             ],
         ),
     ],
-) -> WordExplanationType:
+) -> WordExplanationType:  # ty: ignore[invalid-type-form]
     """explainWord resolver for the GraphQL API"""
 
     try:
