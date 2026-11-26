@@ -39,6 +39,8 @@ init:
 	cp --update=none .env.example .env || true
 	npm install
 	npx --no-install lefthook install
+	# Since e2e tests will take a long time to finish if we go with the normal git configuration. Git will open a connection ASAP you type git push, and then since it takes too long it will drop it.
+	git config core.sshCommand > /dev/null || git config core.sshCommand "ssh -o ServerAliveInterval=30"
 
 ## Starts the app with auto-reload
 start_dev:
@@ -139,7 +141,8 @@ format:
 	done
 	uv run taplo format
 	uv run ruff check --fix .
-	npx --no-install ast-grep scan -U src tests
+	# Colored output queries the terminal's background; inside a git hook the reply leaks into the shell.
+	npx --no-install ast-grep scan --color never -U src tests
 	uv run ruff format .
 
 ## Check formatting
