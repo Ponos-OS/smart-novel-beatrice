@@ -18,6 +18,7 @@ ENV UV_PYTHON_DOWNLOADS=never
 
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev
+COPY LICENSE.md ./
 COPY src ./src
 RUN uv sync --frozen --no-dev
 
