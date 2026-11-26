@@ -34,6 +34,9 @@ conftest.py
 # sibling containers (e.g. the ollama build).
 local-setup/
 
+# Custom lint checks
+scripts/
+
 # Compose file — used to orchestrate the image, not to build it.
 compose.yml
 

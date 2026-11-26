@@ -18,7 +18,7 @@ pre-commit:
         - "src/modules/*/types.py"
       run: make schema
     - name: wire-contract-coverage
-      run: uv run python local-setup/scripts/check_wire_contract_test_coverage.py
+      run: uv run python scripts/check_wire_contract_test_coverage.py
 
 pre-push:
   fail_on_changes: always

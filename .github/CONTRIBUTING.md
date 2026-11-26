@@ -42,8 +42,9 @@ smart-novel-beatrice/
 ├── tests/                            # Integration tests only (Testcontainers-driven)
 │   ├── conftest.py                   # Session fixtures
 │   └── test_*_graphql.py             # One file per GraphQL operation
-├── local-setup/                      # Development-only infra support (container setup, scripts, telemetry config)
+├── local-setup/                      # Development-only infra support (container setup, telemetry config)
 ├── ast-grep/rules/                   # Custom lint rules, configured by sgconfig.yml
+├── scripts/                          # Custom checks run by the Makefile, git hooks and CI
 ├── lefthook.yml                      # Git hooks
 ├── compose.yml
 ├── Dockerfile
